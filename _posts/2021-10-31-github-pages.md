@@ -16,6 +16,20 @@ permalink: /1/
 
 为了满足更多静态网站的自定义需求，需要在本地搭建 Jekyll 环境，对网站样式满意之后将所有 Jekyll 配置上传到仓库，GitHub Pages 会根据配置生成和本地同样的网站样式。
 
+## Ruby
+
+![Ruby](/assets/ruby-logo.png)
+
+如果你和我一样没用过 Ruby 语言，那么可以看看这篇 [Ruby 101](https://jekyllrb.com/docs/ruby-101/)。
+### Gem
+
+Gem 代表 Ruby 语言的代码库，提供特定的功能。Jekyll 是一个 Gem，Jekyll 的插件也是 Gem。
+
+### Gemfile
+Gemfile 文件列出了站点需要的 Gem，每个站点都会有一个。
+
+### Bundler
+Bundler 是用于安装 Gemfile 中需要的 Gem 的工具，同样，也是一个 Gem。在一个包含 Gemfile 文件的目录下，运行 `bundle install` 即可一次性安装 Gemfile 指定的 Gem。
 
 
 ## 使用 Jekyll 设置 GitHub Pages 站点
@@ -101,19 +115,15 @@ Jekyll 是一个通用的静态网站生成工具，但 GitHub Pages 后端生�
     ```
     浏览器访问本地 4000 端口即可看到站点内容。
 
-## Ruby
+    运行完成后，会在目录下生成一个 `_site` 目录，该目录下就是整个静态网页的内容了。
 
-![Ruby](/assets/ruby-logo.png)
 
-如果你和我一样没用过 Ruby 语言，那么可以看看这篇 [Ruby 101](https://jekyllrb.com/docs/ruby-101/)。
-### Gem
+### 写博客
 
-Gem 代表 Ruby 语言的代码库，提供特定的功能。Jekyll 是一个 Gem，Jekyll 的插件也是 Gem。
+博客文章需要放在 `_posts` 目录下，并命名为 `YYYY-MM-DD-{文章标题}.md` 的形式，例如 `2021-01-01-My-Post-Title.md`。
 
-### Gemfile
-Gemfile 文件列出了站点需要的 Gem，每个站点都会有一个。
+文章写完后，运行一下站点，预览效果。预览完成后，push 到 GitHub 仓库中，再访问博客地址，新写的文章就上线了！
 
-### Bundler
-Bundler 是用于安装 Gemfile 中需要的 Gem 的工具，同样，也是一个 Gem。在一个包含 Gemfile 文件的目录下，运行 `bundle install` 即可一次性安装 Gemfile 指定的 Gem。
 
-未完待续。
+本文主要介绍了用 Jekyll 创建站点的过程，内容较为简略，更多内容请到 [Jekyll 文档](https://jekyllrb.com/docs/) 中探索。
+
