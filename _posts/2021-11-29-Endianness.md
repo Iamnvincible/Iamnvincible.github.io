@@ -38,25 +38,25 @@ permalink: /2/
 ## 在树莓派上的示例
 
 ```c
-int main(){
-    unsigned int value = 0x12345678;
-    printf("Hex value = %x\n",value);
-    unsigned int* pv = &value;
-    unsigned char* pc = (unsigned char*)pv;
-    for(int i=0;i<sizeof(value);i++){
-      printf("Hex vaule = %x , address = %p\n",pc[i],pc+i);
-    }
-    return 0;
+int main() {
+  unsigned int value = 0x12345678;
+  printf("Hex value = %x\n", value);
+  unsigned int* pv = &value;
+  unsigned char* pc = (unsigned char*)pv;
+  for (int i = 0; i < sizeof(value); i++) {
+    printf("Hex vaule = %x, address = %p\n", pc[i], pc + i);
+  }
+  return 0;
 }
 ```
 输出如下：
 
 ```bash
 Hex value = 12345678
-Hex vaule = 78 , address = 0xffffff3caad0 #内存的低地址区域存放数值的低位
-Hex vaule = 56 , address = 0xffffff3caad1
-Hex vaule = 34 , address = 0xffffff3caad2
-Hex vaule = 12 , address = 0xffffff3caad3
+Hex vaule = 78, address = 0xffffff3caad0 #内存的低地址区域存放数值的低位
+Hex vaule = 56, address = 0xffffff3caad1
+Hex vaule = 34, address = 0xffffff3caad2
+Hex vaule = 12, address = 0xffffff3caad3
 
 $ cat /proc/device-tree/model
 Raspberry Pi 3 Model B Rev 1.2% 
