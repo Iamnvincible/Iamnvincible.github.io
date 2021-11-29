@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "在 GitHub Pages 上搭建博客"
-categories: GitHub-Pagges
+categories: GitHub-Pages
 tags: github pages
 permalink: /1/
 ---
