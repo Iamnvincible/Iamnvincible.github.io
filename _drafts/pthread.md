@@ -28,10 +28,70 @@ int pthread_create (pthread_t *thread,
 - 进程调用了 `exec()` 或 `exit()`。
 - 主函数没有调用 `pthread_exit` 而先结束。
 
-在主函数结束前调用 `pthread_exit` 会让主函数等待其他线程结束再终止进程。
+```c
+#include <pthread.h>
+void pthread_exit(void *retval);
+```
+
+`pthread_exit` 函数终止调用线程，并将返回值放入 `retval`，其他线程可以通过 `retval` 获得线程返回状态。
+
+如果在主函数（主线程）中调用该函数，那么主线程将会结束，但进程不会结束。当进程中的其他线程都结束时，进程才会结束。
+
+```c
+#include <pthread.h>
+int pthread_cancel(pthread_t thread);
+```
+
+一个进程中的线程可以通过调用 `pthread_cancel`，来请求结束另一个线程。该函数参数为要结束的线程的标识符。如果结束成功返回 0，否则返回错误代码。
+
+## 线程阻塞和分离
+
+```c
+#include <pthread.h>
+int pthread_join(pthread_t thread, void **retval);
+```
+
+一个线程通过调用 `pthread_join` 函数等待 `thread` 线程结束，这个过程称为“阻塞（ join ）”。`thread` 线程运行结束后，继续当前线程。通过 `retval` 获得另一个线程的返回值。被阻塞的 `thread` 线程结束后，其所占用的资源将被释放。
+
+- 一个线程仅能被一个线程阻塞。
+- 线程不能阻塞自己。
+
+```c
+#include <pthread.h>
+int pthread_detach(pthread_t thread);
+```
+
+调用 `pthread_join` 后，当前线程将等待被阻塞线程。使用 `pthread_detach` 函数可以使当前线程不等待目标线程而继续后续任务，并且在目标线程结束后，目标线程的资源将会自动释放。
+
+- 线程可以自己分离自己。
+- 线程被分离后，不能再被阻塞。
+
+线程创建时，可以通过 `pthread_attr_t` 结构来设置线程属性，其中就有与阻塞和分离相关的属性。
+
+```c
+pthread_attr_t attr;
+//初始化并设置 detached 属性
+//可设置为 PTHREAD_CREATE_DETACHED 属性
+//或 PTHREAD _CREATE_JOINABLE 属性
+pthread_attr_init(&attr);
+pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
+pthread_create(thread, &attr, foo, (void *)arg);
+//释放
+pthread_attr_destroy(&attr);
+```
+
+>当线程需要阻塞时，考虑显示设置其可阻塞属性。并非所有情况下，线程都默认被设置为可阻塞。
+>
+>如果线程不会被用于阻塞，考虑在创建时指定其可分离属性，便于线程结束时自动释放资源。
+
+
+
+
 
 ## 参考链接
 
 - [POSIX Threads Programming](https://hpc-tutorials.llnl.gov/posix/)
 - [Pthreads 入门教程](https://hanbingyan.github.io/2016/03/07/pthread_on_linux/)
+- [pthread_join和pthread_detach的用法](https://www.cnblogs.com/fnlingnzb-learner/p/6959285.html)
+- [线程正常终止](https://www.cnblogs.com/zhangxuan/p/6430034.html)
 
