@@ -192,11 +192,14 @@ DoT 使用了特定的传输端口，这对于需要识别 DNS 查询的网络�
 
 ### 更多 DNS 查询方式
 - DNS over QUIC
+  
   QUIC 是一种新设计的传输层协议，相比 TCP 有更好的速度和稳定性。DNS over QUIC 基于这种新的协议传输，同样能保证传输安全和隐私，但由于协议较新，只有 AdGuard 等少数服务商提供这样的 DNS 查询方式。
 - DNSCrypt
+  
   一种还没有以 RFC 征求意见稿方式提交给 IETF 的 DNS 查询方案，不过已经有多个服务端和客户端的实现，许多知名 DNS 服务商已经提供这种 DNS 查询服务。DNSCrypt 需要先以传统 DNS 查询方式获得服务端的证书，再进行加密通信。
 - DNSCurve
-  - 一种基于椭圆曲线加密算法的 DNS 查询方式，但很少有 DNS 服务商支持。
+  
+  一种基于椭圆曲线加密算法的 DNS 查询方式，但很少有 DNS 服务商支持。
 
 ### EDNS
 为了在 DNS 协议中增加更多功能，[RFC 2671](https://datatracker.ietf.org/doc/html/rfc2671) 提出了 DNS 扩展机制（Extension Mechanisms for DNS，EDNS）。DNS 是一个广泛使用的协议，为了保证执行原有协议的服务器仍能正常处理，EDNS 引入了一种伪资源记录（OPT）添加在 DNS 消息的附加记录中。
