@@ -158,8 +158,126 @@ title: Home
   </body>
 </html>
 ```
+
 如果要让 Jekyll 处理页面而不使用变量，在 front matter 中留空即可。
+
 ```liquid
 ---
 ---
 ```
+
+## Layouts
+
+Jekyll 在生成页面时，支持处理 Markdown 和 HTML。在组织简单文本时，使用 Markdown 比 HTML 简单的多。
+
+在根目录中创建一个名为 `about.md` 的 Markdown 文件。可以从之前的 `Index` 文件中复制内容过来再将其修改为**关于**页面，不过这样就会产生重复的代码，每创建一个新页面就会重复一遍。例如，如果要在 `<head>` 标签中增加新的 CSS 内容，就需要为所有页面逐个添加，这会很浪费时间。
+
+### 创建 layout
+
+Layout 是页面样式的模板，可以在任意页面中使用，为一系列页面统一样式。Layout 模板内容保存于 `_layouts` 目录中。
+
+在根目录中创建 `_layouts` 目录，并在其中新建 `default.html` 文件，内容如下。
+
+```html
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>{{ page.title }}</title>
+  </head>
+  <body>
+    {{ content }}
+  </body>
+</html>
+```
+
+文件内容和 `index.html` 大致相同，不过没有 front matter，并且页面内容用 `content` 变量替换了。
+`content` 是一个特殊的变量，其内容为调用这个 layout 的页面渲染完毕后的内容。
+
+### 调用 layouts
+
+为了能让 `index.html` 页面用到新建的样式模板，在 `index.html` 的 front matter 中增加一个 `layout` 变量，修改后的 `index.html` 内容如下。
+
+```liquid
+---
+layout: default
+title: Home
+---
+<h1>{{ "Hello World!" | downcase }}</h1>
+```
+
+刷新页面后，页面内容将保持不变。这是因为 layout 包含了页面内容，可以在 layout 文件中调用 front matter 中创建的变量，例如 `page`，layout 将会使用调用页面的 front matter。
+
+### 创建关于页面
+
+将下面的内容添加到 `about.md` 文件中，能够使用上文创建的样式模板。
+
+```md
+---
+layout: default
+title: About
+---
+
+# About page
+
+This page tells you a little bit about me.
+```
+
+在浏览器中访问 `http://localhost:4000/about.html` 可以看到创建的关于页面。
+
+## Includes
+
+为了将站点中的页面链接起来，需要用到导航。导航需要在每个页面使用，所以也要写在 layout 里，并在合适的地方调用。为介绍 includes ，这里不直接添加到 layout 里。
+
+### Include 标签
+
+`include` 标签可以用于包含存放于 `_includes` 目录中的另一个文件。Includes 在需要使用重复代码的时候非常有用。
+
+用于导航的代码可能会有些复杂，所以有时候会使用 include。
+
+### Include 用法
+
+创建 `_includes/navigation.html` 文件，文件内容如下。
+
+```html
+<nav>
+  <a href="/">Home</a>
+  <a href="/about.html">About</a>
+</nav>
+```
+
+随后，在 `_layouts/default.html` 文件中引入 include 标签 用于页面间导航。
+
+```html
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>{{ page.title }}</title>
+  </head>
+  <body>
+    {% include navigation.html %} {{ content }}
+  </body>
+</html>
+```
+
+用浏览器访问 `http://localhost:4000`，现在可以在页面顶部导航。
+
+### 高亮当前页面
+
+为了在导航中高亮当前所在的页面，需要让 `navigation.html` 知道当前页面的 URL，随后添加高亮样式。Jekyll 有一个变量 `page.url` 可以表示当前页面 URL。
+
+使用 `page.url` 变量获得当前页面，并将当前页面的导航链接改为红色。
+
+```html
+<nav>
+  <a href="/" {% if page.url == "/" %}style="color: red;"{% endif %}>
+    Home
+  </a>
+  <a href="/about.html" {% if page.url == "/about.html" %}style="color: red;"{% endif %}>
+    About
+  </a>
+</nav>
+```
+
+再次访问站点，将能看到当前所在页面的导航颜色有所改变。
