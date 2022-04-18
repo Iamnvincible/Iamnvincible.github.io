@@ -281,3 +281,35 @@ This page tells you a little bit about me.
 ```
 
 再次访问站点，将能看到当前所在页面的导航颜色有所改变。
+
+## 数据文件
+
+Jekyll 可以从位于 `_data` 目录的 YAML、JEON 和 CSV 文件中读取数据，数据文件可以将内容和源码分离，使站点更易于维护。
+
+这里将导航内容存放在数据文件中，随后通过 include 引入。
+
+### 数据文件用法
+
+YAML 是一种在 Ruby 生态圈中普遍使用的文件格式，可以将导航项目存放于数组中，并且为每一项指定链接。
+
+创建 `_data/navigation.yml` 文件，内容如下。
+
+```yml
+- name: Home
+  link: /
+- name: About
+  link: /about.html
+```
+
+使用变量 `site.data.navigation` 可以访问到这个数据文件的内容。现在可以遍历数组获得导航项，而不是像上例那样将所有导航项写入 `_includes/navigation.html` 文件中。
+
+```html
+<nav>
+  {% for item in site.data.navigation %}
+    <a href="{{ item.link }}" {% if page.url == item.link %}style="color: red;"{% endif %}>
+      {{ item.name }}
+    </a>
+  {% endfor %}
+</nav>
+```
+修改后，页面现实内容与上例一致。使用数据文件后，可以在增加导航项时更易维护。
