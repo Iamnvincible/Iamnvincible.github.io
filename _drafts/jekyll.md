@@ -312,4 +312,59 @@ YAML 是一种在 Ruby 生态圈中普遍使用的文件格式，可以将导航
   {% endfor %}
 </nav>
 ```
+
 修改后，页面现实内容与上例一致。使用数据文件后，可以在增加导航项时更易维护。
+
+## Assets
+
+Jekyll 站点中也可以直接使用 CSS、JS 和图像，将这些资源放在 `assets` 目录下即可。为了更好组织，创建子目录 `css`，`js`，`images`。另外，在根目录下创建 `_sass` 目录，稍后将会用到。
+
+### Sass
+
+在 `_includes/navigation.html` 文件中内联了样式，这并不是一个好的做法，更好的做法是为特定对象标记一个 CSS class。将其中的具体样式移除，并用一个 class 来取代，内容如下。
+
+```html
+<nav>
+  {% for item in site.data.navigation %}
+    <a href="{{ item.link }}" {% if page.url == item.link %}class="current"{% endif %}>{{ item.name }}</a>
+  {% endfor %}
+</nav>
+```
+
+可以使用标准的 CSS 文件来控制样式，不过这里使用 Sass，一门 CSS 的扩展语言。创建 `assets/css/styles.scss`，内容如下。
+
+```scss
+---
+---
+
+@import "main";
+```
+
+文件头部的空白 front matter 标志能让 Jekyll 处理此文件。`@import "main"` 表示 Sass 会调用 在 `_sass` 目录下 的 `main.scss` 文件。本例中只用到了一个样式文件，对于较大的项目，这将是组织 样式文件的好办法。
+
+创建 `_sass/main.scss` 文件，内容如下，可将当前访问页面的导航项目设为绿色。
+
+```scss
+.current {
+  color: green;
+}
+```
+
+随后，在 `_layouts/default.html` 中引用样式表。
+
+```html
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>{{ page.title }}</title>
+    <link rel="stylesheet" href="/assets/css/styles.css" />
+  </head>
+  <body>
+    {% include navigation.html %} {{ content }}
+  </body>
+</html>
+```
+其中引用的 `styles.css` 由 Jekyll 从 `styles.scss` 构建生成。
+
+刷新页面后，当前页面链接导航项将变为绿色。
