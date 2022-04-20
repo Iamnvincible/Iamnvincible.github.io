@@ -365,6 +365,126 @@ Jekyll 站点中也可以直接使用 CSS、JS 和图像，将这些资源放在
   </body>
 </html>
 ```
+
 其中引用的 `styles.css` 由 Jekyll 从 `styles.scss` 构建生成。
 
 刷新页面后，当前页面链接导航项将变为绿色。
+
+## 博客
+
+博客可以没有数据库，Jekyll 只使用文本文件就可以组建一个博客。
+
+### Posts
+
+博客文章存放于 `_posts` 目录，Jekyll 对文章文件名有要求，也就是`年-月-日-标题.文件扩展名`。
+
+创建一篇博客文章，文件名为 `_posts/2018-08-20-bananas.md`，内容如下。
+
+```md
+---
+layout: post
+author: jill
+---
+
+A banana is an edible fruit – botanically a berry – produced by several kinds
+of large herbaceous flowering plants in the genus Musa.
+
+In some countries, bananas used for cooking may be called "plantains",
+distinguishing them from dessert bananas. The fruit is variable in size, color,
+and firmness, but is usually elongated and curved, with soft flesh rich in
+starch covered with a rind, which may be green, yellow, red, purple, or brown
+when ripe.
+```
+
+和先前创建的 `about.md` 文件内容结构相似，只是多了 `author` 和 `layout` 两个变量。`author` 是一个自定义变量，可以没有这个变量，或者把变量名改为 `creator` 也无妨。
+
+### Layout
+
+这里用到的 `post` 样式现在还没有，需要创建在 `_layout/post.html` 文件中，内容如下。
+
+```html
+---
+layout: default
+---
+
+<h1>{{ page.title }}</h1>
+<p>{{ page.date | date_to_string }} - {{ page.author }}</p>
+
+{{ content }}
+```
+
+这里用到了样式的继承，继承了 `default` 样式。`post` 样式输出页面标题、日期、作者和正文，其中正文由 `default` 样式包含。
+
+注意，这里用到了 `date_to_string` filter，可以将日期转化为更友好的格式来显示。
+
+### 文章列表
+
+现在还没有办法导航到博客文章，通常博客都会有一个页面来展示博客列表。
+
+Jekyll 将博客列表保存在 `site.posts` 变量中，可以通过遍历将博文列出。在根目录下创建 `blog.html`，内容如下。
+
+```html
+---
+layout: default
+title: Blog
+---
+
+<h1>Latest Posts</h1>
+
+<ul>
+  {% for post in site.posts %}
+  <li>
+    <h2><a href="{{ post.url }}">{{ post.title }}</a></h2>
+    {{ post.excerpt }}
+  </li>
+  {% endfor %}
+</ul>
+```
+- `post.url` 是文章路径，由 Jekyll 设置。
+- `post.title` 是文章文件名中指定的标题，如果文章内容的 front matter 也指定了 title 变量，那么 `post.title` 为 title 变量值。
+- `post.excerpt` 默认是文章第一段的内容。
+
+有了 `blog.html` 页面后，就需要有链接导航到这个页面，修改 `_data/navigation.yml` 文件，添加 blog 页面和链接。
+```yml
+- name: Home
+  link: /
+- name: About
+  link: /about.html
+- name: Blog
+  link: /blog.html
+```
+
+### 再多几篇
+
+一个博客只有一片文章显得不太像样，这里再增加两篇。
+
+第二篇博客文章，`_posts/2018-08-21-apples.md`。
+```md
+---
+layout: post
+author: jill
+---
+An apple is a sweet, edible fruit produced by an apple tree.
+
+Apple trees are cultivated worldwide, and are the most widely grown species in
+the genus Malus. The tree originated in Central Asia, where its wild ancestor,
+Malus sieversii, is still found today. Apples have been grown for thousands of
+years in Asia and Europe, and were brought to North America by European
+colonists.
+```
+第三篇，`_posts/2018-08-22-kiwifruit.md`。
+```md
+---
+layout: post
+author: ted
+---
+Kiwifruit (often abbreviated as kiwi), or Chinese gooseberry is the edible
+berry of several species of woody vines in the genus Actinidia.
+
+The most common cultivar group of kiwifruit is oval, about the size of a large
+hen's egg (5–8 cm (2.0–3.1 in) in length and 4.5–5.5 cm (1.8–2.2 in) in
+diameter). It has a fibrous, dull greenish-brown skin and bright green or
+golden flesh with rows of tiny, black, edible seeds. The fruit has a soft
+texture, with a sweet and unique flavor.
+```
+添加完成后，再次访问，看看新增的博文。
