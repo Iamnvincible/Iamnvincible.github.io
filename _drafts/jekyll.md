@@ -440,11 +440,13 @@ title: Blog
   {% endfor %}
 </ul>
 ```
+
 - `post.url` 是文章路径，由 Jekyll 设置。
 - `post.title` 是文章文件名中指定的标题，如果文章内容的 front matter 也指定了 title 变量，那么 `post.title` 为 title 变量值。
 - `post.excerpt` 默认是文章第一段的内容。
 
 有了 `blog.html` 页面后，就需要有链接导航到这个页面，修改 `_data/navigation.yml` 文件，添加 blog 页面和链接。
+
 ```yml
 - name: Home
   link: /
@@ -459,11 +461,13 @@ title: Blog
 一个博客只有一片文章显得不太像样，这里再增加两篇。
 
 第二篇博客文章，`_posts/2018-08-21-apples.md`。
+
 ```md
 ---
 layout: post
 author: jill
 ---
+
 An apple is a sweet, edible fruit produced by an apple tree.
 
 Apple trees are cultivated worldwide, and are the most widely grown species in
@@ -472,12 +476,15 @@ Malus sieversii, is still found today. Apples have been grown for thousands of
 years in Asia and Europe, and were brought to North America by European
 colonists.
 ```
+
 第三篇，`_posts/2018-08-22-kiwifruit.md`。
+
 ```md
 ---
 layout: post
 author: ted
 ---
+
 Kiwifruit (often abbreviated as kiwi), or Chinese gooseberry is the edible
 berry of several species of woody vines in the genus Actinidia.
 
@@ -487,4 +494,208 @@ diameter). It has a fibrous, dull greenish-brown skin and bright green or
 golden flesh with rows of tiny, black, edible seeds. The fruit has a soft
 texture, with a sweet and unique flavor.
 ```
+
 添加完成后，再次访问，看看新增的博文。
+
+## Collections
+
+为了将某一个作者的文章用单独的页面展示出来，需要用到 collections 功能。Collections 类似于 posts，不过文章不以日期分组。
+
+### 配置
+
+使用 collections 功能需要在 jekyll 配置文件中指定，默认的配置文件是 `_config.yml`。在根目录创建 `_config.yml` 文件，内容如下。
+
+```yml
+collections:
+  authors:
+```
+
+需要重启 Jekyll 服务以重新加载配置文件。
+
+### 添加 authors
+
+Collections 的分类类别存放在根目录的 `_connection_name` 目录中，本例中以 `authors` 作为分类依据，所以类别项目存放于 `_authors` 目录中。为每个 author 创建一个文件，内容如下。
+
+- `_authors/jill.md`
+
+  ```md
+  ---
+  short_name: jill
+  name: Jill Smith
+  position: Chief Editor
+  ---
+
+  Jill is an avid fruit grower based in the south of France.
+  ```
+
+- `_authors/ted.md`
+
+  ```md
+  ---
+  short_name: ted
+  name: Ted Doe
+  position: Writer
+  ---
+
+  Ted has been eating fruit since he was baby.
+  ```
+
+  ### Staff 页
+
+  为了列出所有 authors，创建一个 `staff.html` 页。上一节所有 authors 的信息保存在 `site.authors` 变量中，可以在 `staff.html` 中遍历这个变量以列出所有 authors。
+
+  ```html
+  ---
+  layout: default
+  title: Staff
+  ---
+
+  <h1>Staff</h1>
+
+  <ul>
+    {% for author in site.authors %}
+    <li>
+      <h2>{{ author.name }}</h2>
+      <h3>{{ author.position }}</h3>
+      <p>{{ author.content | markdownify }}</p>
+    </li>
+    {% endfor %}
+  </ul>
+  ```
+
+  由于 `author.content` 这个变量内容是 markdown，显示时需要用 `markdownify` filter。
+
+  既然新增了页面，就要在导航上新增一项。修改 `_data/navitation.yml`，内容如下。
+
+  ```yml
+  - name: Home
+    link: /
+  - name: About
+    link: /about.html
+  - name: Blog
+    link: /blog.html
+  - name: Staff
+    link: /staff.html
+  ```
+
+  ### 为 authors 输出单独页面
+
+  默认情况下，collections 不会为每一个 author 输出一页，只需要修改 `_config.yml` 即可实现。
+
+  ```yml
+  collections:
+    authors:
+      output: true
+  ```
+
+  再次重启 Jekyll 服务以重新加载配置文件。
+
+  再为每个 author 添加一个链接，以链接到单个 author 页面。修改 `staff.html` 内容如下。
+
+  ```html
+  ---
+  layout: default
+  title: Staff
+  ---
+
+  <h1>Staff</h1>
+
+  <ul>
+    {% for author in site.authors %}
+    <li>
+      <h2><a href="{{ author.url }}">{{ author.name }}</a></h2>
+      <h3>{{ author.position }}</h3>
+      <p>{{ author.content | markdownify }}</p>
+    </li>
+    {% endfor %}
+  </ul>
+  ```
+
+  再为 authors 页面创建一个 layout。
+
+  - `_layouts/author.html`
+
+    ```html
+    ---
+    layout: default
+    ---
+
+    <h1>{{ page.name }}</h1>
+    <h2>{{ page.position }}</h2>
+
+    {{ content }}
+    ```
+
+### Front matter 默认值
+
+现在可以为 `author` 页面指定 `author` 这个 layout 样式模板，可以像之前那样加在 front matter 里，这里介绍另一种方法。
+
+可以为每个类型的博客文章设定一个默认的 layout，其他类型的博客文章使用 default layout。这些默认值在 `_config.xml` 中指定，内容如下。
+
+```yml
+collections:
+  authors:
+    output: true
+
+defaults:
+  - scope:
+      path: ""
+      type: "authors"
+    values:
+      layout: "author"
+  - scope:
+      path: ""
+      type: "posts"
+    values:
+      layout: "post"
+  - scope:
+      path: ""
+    values:
+      layout: "default"
+```
+再次重启 Jekyll 服务以重新加载配置文件。
+
+### 列出每个 author 的文章
+
+现在可以为每个 author 创建单独页面了。首先需要匹配每篇文章中的 author 变量到 author 的 `short_name` 属性，使用这个变量来将博客文章按 author 分类。继续修改 `_layouts/author.html`。
+
+```html
+---
+layout: default
+---
+
+<h1>{{ page.name }}</h1>
+<h2>{{ page.position }}</h2>
+
+{{ content }}
+
+<h2>Posts</h2>
+<ul>
+  {% assign filtered_posts = site.posts | where: 'author', page.short_name %} {%
+  for post in filtered_posts %}
+  <li><a href="{{ post.url }}">{{ post.title }}</a></li>
+  {% endfor %}
+</ul>
+```
+
+### 链接到 author 页面
+
+每篇文章都会显示 author，这样可以通过 author 链接到其署名的所有文章。可以在 `_layouts/post.html` 中修改以达到此效果。
+
+```html
+---
+layout: default
+---
+
+<h1>{{ page.title }}</h1>
+
+<p>
+  {{ page.date | date_to_string }} {% assign author = site.authors | where:
+  'short_name', page.author | first %} {% if author %} -
+  <a href="{{ author.url }}">{{ author.name }}</a>
+  {% endif %}
+</p>
+
+{{ content }}
+```
+完成后，重新打开站点，检查一下 staff 页和 author 链接是否正确。
