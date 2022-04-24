@@ -653,6 +653,7 @@ defaults:
     values:
       layout: "default"
 ```
+
 再次重启 Jekyll 服务以重新加载配置文件。
 
 ### 列出每个 author 的文章
@@ -698,4 +699,122 @@ layout: default
 
 {{ content }}
 ```
+
 完成后，重新打开站点，检查一下 staff 页和 author 链接是否正确。
+
+## 部署
+
+站点内容准备就绪后，就可以发布了！
+
+### Gemfile
+
+站点中有 Gemfile 文件可以保证在不同平台上运行时 Jekyll 和其他 gem 版本一致。
+
+在根目录创建 `Gemfile` 文件，注意文件名没有扩展名。使用 Bundler 创建 Gemfile 和添加 jekyll 这个 gem。
+
+```bash
+bundle init
+bundle add jekyll
+```
+
+查看 `Gemfile` 文件，可能会包含以下内容。
+
+```rb
+# frozen_string_literal: true
+
+source "https://rubygems.org"
+
+git_source(:github) {|repo_name| "https://github.com/#{repo_name}" }
+
+# gem "rails"
+
+gem "jekyll", "~> 4.2"
+
+```
+
+Bundler 会安装文件中的 gem，同时创建一个 `Gemfile.lock` 文件，文件中锁定了当前使用的 gem 的版本已备之后运行 `bundle install` 时安装。需要更新时使用 `bundle update` 更新 gem。
+
+当在根目录下创建 `Gemfile` 之后，运行 `jekyll serve` 命令时需要在前面加上 `bundle exec` 以保证运行站点的 ruby 环境是由 `Gemfile` 所指定的环境。
+
+```bash
+bundle exec jekyll server
+```
+
+### Plugins
+
+使用 Jekyll plugins 可以充分自定义站点内容。已经有很多 plugin 可用，也可以编写自己的 plugin。有三个官方 plugin 很常用，能在几乎所有 Jekyll 站点中使用。
+
+- jekyll-sitemap，用于创建站点地图供搜索引擎索引。
+- jekyll-feed，为博客文章生成 RSS 源。
+- jekyll-seo-tag，用于搜索引擎优化（SEO）。
+
+使用时，需要在 `Gemfile` 中指定，如果置于 `jekyll_plugins` 组中，Jekyll 将会自动使用。
+
+```rb
+source "https://rubygems.org"
+
+git_source(:github) {|repo_name| "https://github.com/#{repo_name}" }
+
+# gem "rails"
+
+gem "jekyll", "~> 4.2"
+
+group :jekyll_plugins do
+  gem 'jekyll-sitemap'
+  gem 'jekyll-feed'
+  gem 'jekyll-seo-tag'
+end
+```
+
+随后，在 `_config.yml` 中增加下面几行。
+
+```yml
+plugins:
+  - jekyll-feed
+  - jekyll-sitemap
+  - jekyll-seo-tag
+```
+
+运行 `bundle udpate` 以安装这些 plugin。
+
+`jekyll-sitemap` 不需要任何设置，构建时会自动创建站点地图。`jekyll-feed` 和 `jekyll-seo-tag` 需要在 `_layouts/default.html` 里增加几个 tag。
+
+```html
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>{{ page.title }}</title>
+    <link rel="stylesheet" href="/assets/css/styles.css" />
+    {% feed_meta %} {% seo %}
+  </head>
+  <body>
+    {% include navigation.html %} {{ content }}
+  </body>
+</html>
+```
+重启 Jekyll 后可以在网页 `<head>` 标签中看到 tag。
+
+### 环境变量
+有时候需要在“生产环境”中输出一些内容，但是在开发环境中不需要这些输出，分析脚本就是一个例子。
+
+可以在运行时指定 `JEKYLL_ENV` 环境变量来指定 Jekyll 运行时的环境变量。
+```bash
+JEKYLL_ENV=production bundle exec jekyll build
+```
+默认的 `JEKYLL_ENV` 值为 development。该值使用 liquid 的 `jekyll.environment` 变量可以获得。在生产环境启用分析脚本时，可以使用下面的代码以区分。
+```html
+{% if jekyll.environment == "production" %}
+  <script src="my-analytics-script.js"></script>
+{% endif %}
+```
+
+### 正式部署
+
+在生产环境服务器上执行下面的代码以完成生产环境的构建。
+```bash
+JEKYLL_ENV=production bundle exec jekyll build
+```
+构建完成后的内容出现在 `_site` 目录下，可以将该目录内容复制到服务器目录。
+
+- 注意，`_site` 目录中原有的内容在构建时将会自动清除
