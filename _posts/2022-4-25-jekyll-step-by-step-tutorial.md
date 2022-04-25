@@ -1,4 +1,12 @@
-# Jekyll 从入门到入门
+---
+layout: post
+title: "Jekyll 从入门再入门"
+categories: GitHub-Pages
+tags: jekyll
+permalink: /7/
+---
+{% raw %}
+本文是 [Jekyll Docs: Step by Step Tutorial](https://jekyllrb.com/docs/step-by-step/01-setup/) 的拙劣翻译，帮助我进一步理解 Jekyll 的*哲学*。
 
 ## 依赖
 
@@ -61,7 +69,7 @@ Object 用于在页面中定义变量，使用两对花括号表示：`{{ variab
 
 ### Tags
 
-Tag 用于在模板中定义逻辑和控制流，使用一对花括号和百分号表示：`{% ... %}`。
+Tag 用于在模板中定义逻辑和控制流，使用一对花括号和百分号表示。
 
 例如，下面的模板代码使用 `page.show_sidebar` 变量来控制是否显示边栏。
 
@@ -256,7 +264,7 @@ This page tells you a little bit about me.
     <title>{{ page.title }}</title>
   </head>
   <body>
-    {% include navigation.html %} {{ content }}
+    {% include navigation.html %} {{ content }
   </body>
 </html>
 ```
@@ -565,7 +573,7 @@ Collections 的分类类别存放在根目录的 `_connection_name` 目录中，
 
   由于 `author.content` 这个变量内容是 markdown，显示时需要用 `markdownify` filter。
 
-  既然新增了页面，就要在导航上新增一项。修改 `_data/navitation.yml`，内容如下。
+  既然新增了页面，就要在导航上新增一项。修改 `_data/navigation.yml`，内容如下。
 
   ```yml
   - name: Home
@@ -786,6 +794,7 @@ plugins:
     <meta charset="utf-8" />
     <title>{{ page.title }}</title>
     <link rel="stylesheet" href="/assets/css/styles.css" />
+     
     {% feed_meta %} {% seo %}
   </head>
   <body>
@@ -793,28 +802,37 @@ plugins:
   </body>
 </html>
 ```
+
 重启 Jekyll 后可以在网页 `<head>` 标签中看到 tag。
 
 ### 环境变量
+
 有时候需要在“生产环境”中输出一些内容，但是在开发环境中不需要这些输出，分析脚本就是一个例子。
 
 可以在运行时指定 `JEKYLL_ENV` 环境变量来指定 Jekyll 运行时的环境变量。
+
 ```bash
 JEKYLL_ENV=production bundle exec jekyll build
 ```
+
 默认的 `JEKYLL_ENV` 值为 development。该值使用 liquid 的 `jekyll.environment` 变量可以获得。在生产环境启用分析脚本时，可以使用下面的代码以区分。
+
 ```html
 {% if jekyll.environment == "production" %}
-  <script src="my-analytics-script.js"></script>
+<script src="my-analytics-script.js"></script>
 {% endif %}
 ```
 
 ### 正式部署
 
 在生产环境服务器上执行下面的代码以完成生产环境的构建。
+
 ```bash
 JEKYLL_ENV=production bundle exec jekyll build
 ```
+
 构建完成后的内容出现在 `_site` 目录下，可以将该目录内容复制到服务器目录。
 
 - 注意，`_site` 目录中原有的内容在构建时将会自动清除。
+
+{% endraw %}

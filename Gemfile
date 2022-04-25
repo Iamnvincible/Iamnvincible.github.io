@@ -36,4 +36,4 @@ gem "wdm", "~> 0.1.0", :install_if => Gem.win_platform?
 # kramdown v1, comment out this line.
 gem "kramdown-parser-gfm"
 
-gem "github-pages", "~> 219", group: :jekyll_plugins
+gem "github-pages", "~> 226", group: :jekyll_plugins
