@@ -113,7 +113,7 @@ Filter 用于改变 Object 的输出样式，使用 `|` 表示。
 
 修改后，`index.html` 文档内容如下。
 
-```liquid
+```html
 ---
 ---
 
@@ -277,7 +277,7 @@ This page tells you a little bit about me.
 
 使用 `page.url` 变量获得当前页面，并将当前页面的导航链接改为红色。
 
-```html
+```liquid
 <nav>
   <a href="/" {% if page.url == "/" %}style="color: red;"{% endif %}>
     Home
@@ -311,7 +311,7 @@ YAML 是一种在 Ruby 生态圈中普遍使用的文件格式，可以将导航
 
 使用变量 `site.data.navigation` 可以访问到这个数据文件的内容。现在可以遍历数组获得导航项，而不是像上例那样将所有导航项写入 `_includes/navigation.html` 文件中。
 
-```html
+```liquid
 <nav>
   {% for item in site.data.navigation %}
     <a href="{{ item.link }}" {% if page.url == item.link %}style="color: red;"{% endif %}>
@@ -331,7 +331,7 @@ Jekyll 站点中也可以直接使用 CSS、JS 和图像，将这些资源放在
 
 在 `_includes/navigation.html` 文件中内联了样式，这并不是一个好的做法，更好的做法是为特定对象标记一个 CSS class。将其中的具体样式移除，并用一个 class 来取代，内容如下。
 
-```html
+```liquid
 <nav>
   {% for item in site.data.navigation %}
     <a href="{{ item.link }}" {% if page.url == item.link %}class="current"{% endif %}>{{ item.name }}</a>
