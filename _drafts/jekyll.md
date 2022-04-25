@@ -14,7 +14,7 @@
    ```sh
    gem install jekyll bundle
    ```
-2. 创建 `Gemfile` 文件，以列出项目所需依赖。
+2. 在任意目录创建 `Gemfile` 文件，以列出项目所需依赖。
    ```sh
    bundle init
    ```
@@ -22,8 +22,8 @@
    ```sh
    gem "jekyll"
    ```
-4. 运行 `bundle` 安装依赖。以后所有使用 Jekyll 的命令都可以加上前缀 `bundle exec` 以保证使用的 Jekyll 是 `Gemfile` 中指定的版本。
-   > 这一步会安装很多 Gem，他们都会安装在系统目录下 `/usr/local/bundle/gems`
+4. 运行 `bundle` 安装依赖。以后使用 Jekyll 的命令都可以加上前缀 `bundle exec` 以保证使用的 Jekyll 是 `Gemfile` 中指定的版本。
+   > 这一步会安装很多 Gem，可能会安装在 `/usr/local/bundle/gems` 目录。
 
 ### 创建站点
 
@@ -44,10 +44,10 @@
 
 ### 构建
 
-Jekyll 是静态网站生成器，所以在预览网站前需要构建站点。
+Jekyll 是静态网站生成器，所以在预览网站前需要构建站点，在根目录下执行下面的命令以完成构建。
 
 - `jekyll build`，构建站点，并在 `_site` 目录下存放构建结果。
-- `jekyll server`，构建站点，并在本地 4000 端口开放站点内容，可以通过浏览器访问 `http://localhost:4000`。在站点内容修改后需要重新构建。
+- `jekyll serve`，构建站点，并在本地 4000 端口开放站点内容，可以通过浏览器访问 `http://localhost:4000`。在站点内容修改后需要重新构建。
 
 ## Liquid
 
@@ -170,7 +170,7 @@ title: Home
 
 Jekyll 在生成页面时，支持处理 Markdown 和 HTML。在组织简单文本时，使用 Markdown 比 HTML 简单的多。
 
-在根目录中创建一个名为 `about.md` 的 Markdown 文件。可以从之前的 `Index` 文件中复制内容过来再将其修改为**关于**页面，不过这样就会产生重复的代码，每创建一个新页面就会重复一遍。例如，如果要在 `<head>` 标签中增加新的 CSS 内容，就需要为所有页面逐个添加，这会很浪费时间。
+在根目录中创建一个名为 `about.md` 的 Markdown 文件。可以从之前的 `index.html` 文件中复制内容过来再将其修改为**关于**页面，不过这样就会产生重复的代码，每创建一个新页面就会重复一遍。例如，如果要在 `<head>` 标签中增加新的 CSS 内容，就需要为所有页面逐个添加，这会很浪费时间。
 
 ### 创建 layout
 
@@ -206,7 +206,7 @@ title: Home
 <h1>{{ "Hello World!" | downcase }}</h1>
 ```
 
-刷新页面后，页面内容将保持不变。这是因为 layout 包含了页面内容，可以在 layout 文件中调用 front matter 中创建的变量，例如 `page`，layout 将会使用调用页面的 front matter。
+刷新页面后，页面内容将保持不变，这是因为 layout 包含了页面内容，可以在 layout 文件中调用 front matter 中创建的变量，例如 `page`，layout 将会使用调用页面的 front matter。
 
 ### 创建关于页面
 
@@ -413,7 +413,7 @@ layout: default
 {{ content }}
 ```
 
-这里用到了样式的继承，继承了 `default` 样式。`post` 样式输出页面标题、日期、作者和正文，其中正文由 `default` 样式包含。
+这里用到了样式的继承，继承了 `default` 样式。`post` 样式输出页面标题、日期、作者和正文，全部内容嵌入 `default` 样式中。
 
 注意，这里用到了 `date_to_string` filter，可以将日期转化为更友好的格式来显示。
 
@@ -737,7 +737,7 @@ Bundler 会安装文件中的 gem，同时创建一个 `Gemfile.lock` 文件，�
 当在根目录下创建 `Gemfile` 之后，运行 `jekyll serve` 命令时需要在前面加上 `bundle exec` 以保证运行站点的 ruby 环境是由 `Gemfile` 所指定的环境。
 
 ```bash
-bundle exec jekyll server
+bundle exec jekyll serve
 ```
 
 ### Plugins
@@ -817,4 +817,4 @@ JEKYLL_ENV=production bundle exec jekyll build
 ```
 构建完成后的内容出现在 `_site` 目录下，可以将该目录内容复制到服务器目录。
 
-- 注意，`_site` 目录中原有的内容在构建时将会自动清除
+- 注意，`_site` 目录中原有的内容在构建时将会自动清除。
