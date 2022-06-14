@@ -249,61 +249,112 @@ permalink: /8/
 有了上面的知识，就可以实践一下了，顺便分享一些我喜欢的曲子。古典音乐源自欧洲，所以会有很多曲子不是用英语标注，例如德语、法语、意大利语等，看到不认识的词也不必惊讶。
 
 - Bach:Cello Suite No.1 in G Major, BWV 1007: I. Prélude
+
   巴赫的 G 大调第一大提琴组曲，第一乐章前奏曲。也是我最喜欢的大提琴曲子，搜 BWV 1007 就能找到。大提琴的声音低沉稳重，娓娓道来。巴赫这部作品只有大提琴演奏，也称为无伴奏大提琴组曲，共有 6 组，编号 BWV 1007-1012。
+
 - Vivaldi:The Four Seasons, Violin Concerto in E Major, Op. 8 No.1, RV 269 "Spring":I.Allegro
+
   维瓦尔第的 E 大调第一小提琴协奏曲，四季-春，第一乐章，快板。最喜欢的小提琴曲子。巴洛克时期少见的标题音乐，四季小提琴协奏曲共有 4 组，分别表现春夏秋冬，非常生动。“春”这一首，曲子轻松愉快，生机盎然。4 组都很不错，适合连起来一起听。
+
 - Tchaikovsky:Swan Lake,Op. 20, Act II: No.13, Dances of the Swans
+
   柴可夫斯基的芭蕾舞剧《天鹅湖》改编的组曲，这一段是其中第二幕，第 13 首曲子。这一首其实是由 7 段曲子组成的，有些演绎没有分开列出，总称为“天鹅舞曲”。其中的第四段是著名的《四小天鹅舞曲》，旋律轻松活泼。组曲的第 10 首也很不错，整部《天鹅湖》都可以听一听。
+
 - Tchaikovsky: The Nutcracker, Op. 71, Act I, Scene 1: No. 2, March
+
   柴可夫斯基的《胡桃夹子》，第一幕第一景的第二首曲子，进行曲。
+
 - Symphony No. 5 in C Minor, Op. 67: I. Allegro con brio
+
   贝多芬 C 小调第五交响曲，第一乐章，充满活力的快板。著名的《命运》交响曲的第一乐章，开门见山地道出命运地凶险。
-- Beethoven: Symphony No. 9 in D Minor, Op. 125 "Choral": IV. Presto "O Freunde, nicht diese Töne!" 
+
+- Beethoven: Symphony No. 9 in D Minor, Op. 125 "Choral": IV. Presto "O Freunde, nicht diese Töne!"
+
   贝多芬 D 小调第九交响曲，第四乐章，标题意为“啊！朋友，何必老调重弹！”。这一乐章前面是演奏，后面是合唱，标题其实是合唱部分第一句，歌词大部分来自德国诗人席勒的《欢乐颂》，这就是我们常听《欢乐颂》的。
+
 - Midsummer Night's Dream, Incidental Music, Op. 61, MWV M 13: No.9 Wedding March
+
   门德尔松《仲夏夜之梦》的第九首曲子——婚礼进行曲。
+
 - Symphony No. 40 in G Minor, K. 550: I. Molto allegro
+
   莫扎特 G 小调第四十交响曲，第一乐章。S.H.E 的歌曲《不想长大》就引用了这里的旋律。
+
 - Piano Sonata No. 16 in C Major, K. 545 "Sonata facile": I. Allegro
+
   莫扎特第十六钢琴奏鸣曲，第一乐章，“单纯的奏鸣曲”。
+
 - Piano Sonata No. 11 in A Major, K. 331: III. Rondo alla turca. Allegretto
+
   莫扎特第十一钢琴奏鸣曲，第三乐章，也就是著名的《土耳其进行曲》。曾经有部动画片《麦兜故事》就用到了这首曲子，麦兜给它配上了歌词——《仲有最靓嘅猪腩肉》，我印象深刻，非常有趣。
+
 - Clair de Lune, L. 32
+
   德彪西的《月光》。德彪西的作品就经常只有一个标题了，曲子给人以月夜幽静的感觉。
+
 - La fille aux cheveux de lin, L. 33
-  德彪西的《亚麻色头发的少女》。曲子安静优雅，正如一位少女，活灵活现。
+
+  德彪西的《亚麻色头发的少女》。曲子安静优雅，正如一位少女。
+
 - Solomon, HWV 67: Arrival of the Queen of Sheba
+
   亨德尔《示巴女王的来临》，来自清唱剧《所罗门》。
+
 - Peer Gynt Suite No.1, Op.46: 1. Morning Mood
+
   挪威作曲家爱德华·格里格创作的乐曲，晨歌。
+
 - Also sprach Zarathustra, Op. 30, TrV 176: Prelude
+
   理查德·施特劳斯的交响诗《查拉图斯特拉如是说》，标题取自尼采同名哲学巨著，在电影《2001 太空漫游》中作为配乐出现。乐曲宏伟壮丽，极具感染力。
+
 - Wiegenlied, Op. 49, No. 4 (Arr. for Cello and Piano)
+
   勃拉姆斯的《摇篮曲》。曲子安静，极尽温柔，特别是大提琴的版本。据说，此曲是勃拉姆斯为祝贺心爱女子生下第二个孩子时所作，但是勃拉姆斯终生未娶。
+
 - Salut d'amour, Op. 12
+
   英国作曲家爱德华·埃尔加的《爱的礼赞》。曲子饱含深情，是作曲家写给新婚妻子的作品。
+
 - Mariage d'amour "Spring Waltz"
+
   《梦中的婚礼》，由法国作曲家保罗·塞内维尔和奥立佛·图森为钢琴家理查德·克莱德曼所作。
+
 - Sonata a violono e violone e cimbalo, Op. 5, Sonata No.11 in E: II.Allegro
+
   意大利作曲家、小提琴家阿尔坎杰罗·科雷利的第五号小提琴奏鸣曲中的第一首曲子。
+
 - 8 Humoresques, Op. 101, B. 187: No. 7, Poco lento e grazioso
+
   德沃夏克，八首幽默曲的第七首，说是“幽默”却有几分伤感。
+
 - On The Beautiful Blue Danube Op 314
+
   约翰·施特劳斯二世的《蓝色多瑙河》，是其三大圆舞曲之一，被视为奥地利的“第二国歌”。
-- The Maiden's Prayer, Op. 4 
+
+- The Maiden's Prayer, Op. 4
+
   波兰女作曲家巴拉诺夫斯卡在十八岁时所作的《少女的祈祷》，不过作曲家在二十四岁便因病离世。乐曲婉转动听，充满遐想，钢琴家郎朗就曾演绎过这首曲子。
+
 - Marcha Radetzky, Op.228
+
   奥地利作曲家老约翰·施特劳斯的《拉德茨基进行曲》，该曲为赞颂奥地利伯爵约瑟夫·冯·拉德茨基对国家建战功而作，乐曲生机勃勃、意气风发。
-- Boléro (Ravel) 
+
+- Boléro (Ravel)
+
   拉威尔的《波莱罗》舞曲。乐曲虽然节奏重复，但仍富有生气，最早听到这首曲子应该是在动画《数码宝贝》里。
+
 - Die Forelle
+
   《鳟鱼》，李斯特改编自舒伯特的同名歌曲的钢琴独奏曲目。
+
 - L’arlésienne Suite No. 2 (Arr. E. Guiraud): IV. Farandole
+
   《阿莱城的姑娘》第二组曲的第四曲，法兰多尔舞曲，该曲是法国作曲家乔治·比才为阿尔封斯·都德的同名戏剧作品创作。
+
 - Hooked On Classics 1, 2 & 3
+
   这是一张专辑，内容堪称古典音乐的“串烧”，节奏强烈，将古典音乐与流行音乐元素融为一体，非常带劲。
-
-
 
 ## 结语
 
@@ -311,47 +362,31 @@ permalink: /8/
 
 ### 一些参考
 
+- [我的古典歌单](https://open.spotify.com/playlist/3yhSbRa6WWHTDqZSgD7mN8?si=2df72c7966524646)
 - 书籍：[古典音乐说明书](https://book.douban.com/subject/27054018/)
 - 百科
-  - https://en.wikipedia.org/wiki/Catalogues_of_classical_compositions
-  - https://en.wikipedia.org/wiki/List_of_classical_music_sub-titles,_nicknames_and_non-numeric_titles
-  - 
-
-https://www.naxos.com/education/brief_history.asp
-https://www.masterclass.com/articles/classical-music-eras#7-eras-of-classical-music
-[我眼中的西方音乐史【一、总论】](https://zhuanlan.zhihu.com/p/109019137)
-[音乐史](https://zh.m.wikipedia.org/zh-cn/%E9%9F%B3%E6%A8%82%E5%8F%B2)
-
-[如何做一个合格的古典音乐“标题党”](https://zhuanlan.zhihu.com/p/136657367)
-[古典音乐中的作曲家作品编号体系——导论](https://zhuanlan.zhihu.com/p/144100817)
-[搜索古典音乐的小技巧](https://zhuanlan.zhihu.com/p/102450104)
-[古典音乐题目中的「神秘代码」究竟是什么？](https://zhuanlan.zhihu.com/p/30753639)
-
-[古典音乐是如何命名编排的？](https://www.zhihu.com/question/22439412)
-[Classical Music Titles, Explained](https://rewirethewest.com/classical-music-titles-explained/)
-
-https://classicalcandor.blogspot.com/2013/01/a-glossary-of-classical-music-terms.html
-
-https://parkersymphony.org/classical-music-names
-https://www.schoolofcomposition.com/how-to-name-a-piece-of-music/
-https://community.metabrainz.org/t/naming-guidelines-of-classical-music-works/459398/3
-
-https://hellomusictheory.com/learn-music-theory/
-https://hellomusictheory.com/learn/absolute-music/
-
-音乐网站
-https://www.sin80.com/
-
-https://zhuanlan.zhihu.com/p/35924301
-https://zhuanlan.zhihu.com/p/352296545
-https://www.bilibili.com/read/cv3126154
-https://www.zhihu.com/question/20612595
-[乐理 | 调是什么？](https://zhuanlan.zhihu.com/p/35924301)
-[已经混得脸熟的“Op.”、“BWV”……，你知道它们是怎么回事吗？](http://www.soomal.com/doc/10100007461.htm)
-
-[意大利音乐术语](https://www.musicca.com/zh/terms)
-
-https://zhuanlan.zhihu.com/p/136657367
-https://zhuanlan.zhihu.com/p/102450104
-
-https://en.wikipedia.org/wiki/Tempo
+  - [古典音乐目录](https://en.wikipedia.org/wiki/Catalogues_of_classical_compositions)
+  - [无标题古典音乐别称](https://en.wikipedia.org/wiki/List_of_classical_music_sub-titles,_nicknames_and_non-numeric_titles)
+  - [音乐史](https://zh.m.wikipedia.org/zh-cn/%E9%9F%B3%E6%A8%82%E5%8F%B2)
+  - [tempo](https://en.wikipedia.org/wiki/Tempo)
+- 古典音乐媒体
+  - [新芭网](https://www.sin80.com/)
+- 其他
+  - [History of Classical Music](https://www.naxos.com/education/brief_history.asp)
+  - [Learn Music Theory](https://hellomusictheory.com/learn-music-theory/)
+  - [我眼中的西方音乐史](https://zhuanlan.zhihu.com/p/109019137)
+  - [如何做一个合格的古典音乐“标题党”](https://zhuanlan.zhihu.com/p/136657367)
+  - [古典音乐中的作曲家作品编号体系](https://zhuanlan.zhihu.com/p/144100817)
+  - [搜索古典音乐的小技巧](https://zhuanlan.zhihu.com/p/102450104)
+  - [古典音乐题目中的「神秘代码」究竟是什么？](https://zhuanlan.zhihu.com/p/30753639)
+  - [古典音乐是如何命名编排的？](https://www.zhihu.com/question/22439412)
+  - [已经混得脸熟的“Op.”、“BWV”……，你知道它们是怎么回事吗？](http://www.soomal.com/doc/10100007461.htm)
+  - [Classical Music Titles, Explained](https://rewirethewest.com/classical-music-titles-explained/)
+  - [A Glossary of Classical Music Terms](https://classicalcandor.blogspot.com/2013/01/a-glossary-of-classical-music-terms.html)
+  - [WHAT’S IN A NAME? UNDERSTANDING CLASSICAL MUSIC TITLES](https://parkersymphony.org/classical-music-names)
+  - [What Is Absolute Music: A Complete Guide](https://hellomusictheory.com/learn/absolute-music/)
+  - [每个人都应该了解的音乐理论](https://www.bilibili.com/read/cv3126154)
+  - [乐理 | 调是什么？](https://zhuanlan.zhihu.com/p/35924301)
+  - [纯律、五度相生律和十二平均律是如何产生的？三种律制之间有何关系？](https://www.zhihu.com/question/20612595)
+  - [乐理 | 调是什么？](https://zhuanlan.zhihu.com/p/35924301)
+  - [意大利音乐术语](https://www.musicca.com/zh/terms)
