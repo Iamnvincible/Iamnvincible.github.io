@@ -156,6 +156,102 @@ objdump -d mstore.o
 - 反汇编器解码的唯一依据就是机器代码的字节顺序，不需要知道源代码。
 - 反汇编器的结果和编译器生成的汇编代码会稍有不同，例如，反汇编结果中 `mov` 指令对应的汇编指令为 `movq`，省略的后缀 `q`。后缀和参数的长度有关，省略不会有影响。
 
+生成可执行的代码需要链接器将多个目标文件链接起来，其中必须有一个目标文件中存在 `main` 函数。将下面代码编译成可执行文件。
+
+```c
+#include <stdio.h>
+void mulstore(long, long, long *);
+
+int main() {
+  long d;
+  mulstore(2, 3, &d);
+  printf("2 * 3 --> %ld\n", d);
+  return 0;
+}
+
+long mult2(long a, long b) {
+  long s = a * b;
+  return s;
+}
+```
+
+```bash
+gcc -Og -o prog main.c mstore.c
+```
+编译得到的 `prog` 可执行文件占用空间大约是前面 `mstore.o` 文件的好几倍，因为其中不仅包含了上面程序源代码对应的机器代码，还包括启动、终止程序以及与操作系统交互的代码。
+
+再次调用反汇编器，对这个可执行文件反汇编。
+
+```bash
+objdump -d prog
+```
+
+输出的结果会比较多，其中包括上面程序源代码对应的反汇编结果。
+```
+00000000000011ab <mulstore>:
+    11ab:       53                      push   %rbx
+    11ac:       48 89 d3                mov    %rdx,%rbx
+    11af:       e8 ef ff ff ff          call   11a3 <mult2>
+    11b4:       48 89 03                mov    %rax,(%rbx)
+    11b7:       5b                      pop    %rbx
+    11b8:       c3                      ret
+```
+内容和前面的反汇编结果相似，注意到第一列的指令地址以及由链接器转移到了另一段地址。另外，`call` 指令调用的函数地址也发生了变化。链接器的一个作用就是确定函数调用的实际目标地址。书中原文例子中还会有 `nop` 指令用于字节对齐。
+
+
+### 汇编代码格式说明
+
+GCC 生成的汇编代码包含了很多我们目前尚不关心的信息。例如前面生成的 `mstore.s` 汇编文件的全部内容如下。
+```asm
+	.file	"mstore.c"
+	.text
+	.globl	mulstore
+	.type	mulstore, @function
+mulstore:
+.LFB0:
+	.cfi_startproc
+	pushq	%rbx
+	.cfi_def_cfa_offset 16
+	.cfi_offset 3, -16
+	movq	%rdx, %rbx
+	call	mult2@PLT
+	movq	%rax, (%rbx)
+	popq	%rbx
+	.cfi_def_cfa_offset 8
+	ret
+	.cfi_endproc
+.LFE0:
+	.size	mulstore, .-mulstore
+	.ident	"GCC: (GNU) 15.1.1 20250425"
+	.section	.note.GNU-stack,"",@progbits
+```
+以点 `.` 开始的代码是汇编器给链接器的说明，阅读时可以忽略。另外，汇编代码中也没有包含与源代码的对应关系。为了更好理解这些代码，后面的例子中会给出代码行号和解释。在上面汇编代码中加入助记后如下。
+
+```asm
+void mulstore(long x, long y, long *dest)
+x in %rdi, y in %rsi, dest in %rdx
+
+1 mulstore:
+2	pushq	%rbx            保存 %rbx
+3	movq	%rdx, %rbx      复制 %rdx 到 %rbx
+4	call	mult2           函数调用 mult2(x, y)
+5	movq	%rax, (%rbx)    将返回值存入 *dest
+6	popq	%rbx            复原 %rbx
+7	ret                     函数返回
+```
+
+这里只展示我们关心的代码片段。右侧的说明可以很好与原 C 代码联系起来。
+
+在 C 代码中也可以加入汇编代码。一些需要使用更底层机器功能的程序（例如 FFMPEG）会在代码中加入汇编代码。一种调用方式是用汇编编写一个完整函数，在链接时与 C 函数连接起来。另一种是内联汇编，GCC 支持在 C 程序中直接编写汇编代码。
+
+需要注意的是，本书中用到的汇编代码格式是 AT&T 格式，这也是 GCC、OBJDUMP 等工具默认使用的格式。在一些来自微软或 Intel 的工具和文档中，汇编代码可能会以 Intel 格式给出。GCC 支持使用参数 `-masm=intel` 来生成 Intel 格式的汇编代码文件。Intel 和 AT&T 汇编格式有以下区别：
+- Intel 格式省略了指令字长后缀，例如 `pushq`、`movq` 在 Intel 格式中会是 `push`、`mov`。
+- Intel 格式中寄存器前的 `%` 被省略。
+- Intel 格式对内存位置的描述有所不同。Intel 使用 `QWORD PTR [rbx]` 而不是 `(%rbx)` 来访问寄存器 `rbx` 内容指向的内存地址，即将寄存器中的值当作指针，访问内存某个地址中的值。
+- Intel 格式和 AT&T 格式指令的操作数顺序相反。
+
+
+
 
 ## 数据的格式
 
