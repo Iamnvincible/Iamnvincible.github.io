@@ -355,7 +355,7 @@ MOV 类指令将数据从源移动到目标，不会经过任何转换。根据�
 |`movzbq`||从 byte 到 quad word 0 扩展移动|
 |`movzwq`||从 word 到 quad word 0 扩展移动|
 
-MOVS 类指令会在数据移动时执行符号扩展。其中 `cltq` 指令没有操作数，它专门应用于 `%eax` 寄存器。其效果与 `movslq %eax,%rax` 相同，但在编码上更为简单。
+MOVS 类指令会在数据移动时执行符号扩展。其中 `cltq` 指令没有操作数，它专门应用于 `%eax` 寄存器。其效果与 `movslq %eax,%rax` 相同，但在 `cltq` 指令编码上更为简单。
 |指令|效果|说明|
 |----|-----|----|
 |MOVS $S,R$| $R\larr$ SignExtend(S)|数据移动时符号扩展|
