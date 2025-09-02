@@ -378,6 +378,12 @@ Disassembly of section .text:
 
 ### .rela.text 段
 
+`.rela.text` 段是代码段的重定位段，虽然是段表中的第二项，但段的数据并不与代码段相邻，而在整个文件的第 0x238 字节起的 0x48 字节。因为与代码段关系密切，所以在段表中相邻。这里标注文件偏移时使用了 16 进制，`xxd` 也接受 16 进制偏移量，不用转换到 10 进制。
+
+代码段的重定位段也可以叫作重定位表，记录了在代码中引用的定义在其他目标文件中的符号（全局变量或函数）。这些符号在这个尚未链接的目标文件中使用了默认地址表示，在链接阶段，链接器会通过重定位表找到这个目标文件引用符号的定义。如果链接器不能在其他目标文件中找到任何一个符号的定义，链接器就会提示 ` undefined reference to xxx` 的错误，链接也会停止。
+
+这是 `xxd` 显示的原始数据。
+
 ```sh
 $ xxd -s 0x238 -l 0x48 SimpleSection.o
 00000238: 0900 0000 0000 0000 0200 0000 0300 0000  ................
@@ -387,7 +393,7 @@ $ xxd -s 0x238 -l 0x48 SimpleSection.o
 00000278: fcff ffff ffff ffff                      ........
 ```
 
-`objdump -r SimpleSection.o`
+可以用 `objdump -r SimpleSection.o` 读取目标文件中的重定位段，结果中包括代码段的重定位段和其他可能的重定位段。这里仍使用 `readelf` 来展示代码段的重定位段的解析结果。
 
 ```sh
 $ readelf -j 2 SimpleSection.o
@@ -398,6 +404,24 @@ Relocation section '.rela.text' at offset 0x238 contains 3 entries:
 000000000013  000500000004 R_X86_64_PLT32    0000000000000000 printf - 4
 000000000026  000400000004 R_X86_64_PLT32    0000000000000000 func1 - 4
 ```
+
+这是重定位段的结构定义，一个重定位项占用 24 字节，三个共 72 字节。
+
+```c
+typedef int64_t  Elf64_Sxword;
+typedef struct
+{
+  Elf64_Addr    r_offset;       /* Address */
+  Elf64_Xword   r_info;         /* Relocation type and symbol index */
+  Elf64_Sxword  r_addend;       /* Addend */
+} Elf64_Rela;
+
+```
+重定位表的三个结构体成员分布对应解析结果的 `Offset`、`Info`、`Addend` 列，表示一个符号在代码段中的偏移、重定位类型以及重定位偏移量。例如其中的第一项表示这个需要重定位的符号在代码段的第 0x9 字节起的位置，也就是前面介绍 `func1` 函数第三条代码时提到的提供给 `printf` 的格式化字符串。这个符号的重定位类型通过 `r_info` 的低 32 位给出的数值确定，这里解析为 `R_X86_64_PC32`，表示这个符号在链接时使用的地址修正方式。
+
+这个地址修正方式表示，在链接时，链接器找到所引用字符串在程序虚拟地址空间中的绝对地址 `S` 后，将用于占位的 `0x00000000` 地址修正为 `S` + `r_addend` - `r_offset` 。有了正确的符号地址，程序在运行时才能找到字符串。
+
+`readelf` 给出解析中的 `Sym. Value` 列和 `Sym. Name` 列表示符号的值和名称，这两列在结构体中并没有定义，是 `readelf` 通过 `r_info` 的高 32 位给出的数值确定的。这个数值代表这个符号在符号表中的索引（符号表在后面介绍），从符号表中可以读取符号名称和符号值。对于字符串常量来说，符号名称是汇编器确定的，符号值在这里是 8 字节，在代码段中，符号实际占用的地址长度是 4 字节，
 
 ```sh
 $ objdump -r -d SimpleSection.o
@@ -447,3 +471,4 @@ Disassembly of section .text:
 ## 参考资料
 - 程序员的自我修养——链接、装载与库，俞甲子、石凡、潘爱民
 - [ELF x86-64 psABI](https://gitlab.com/x86-psABIs/x86-64-ABI)
+- [Relocation](https://refspecs.linuxbase.org/elf/gabi4+/ch4.reloc.html)
