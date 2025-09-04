@@ -297,7 +297,7 @@ Key to Flags:
 
 ## 段
 
-了解段表之后，就直到这个目标文件有哪些段了，可以通过各个段的名称逐个分析。
+了解段表之后，就知道这个目标文件有哪些段了，可以通过各个段的名称逐个分析。
 
 ### .text 代码段
 
@@ -494,7 +494,92 @@ Hex dump of section '.data':
 
 `0x54` 和 `0x55` 分别时全局变量 `global_init_var` 和局部静态变量 `static_var` 的初始值。
 
+## .bss 段
+
+`.bss` 段中存放**未初始化或初始化为 0 的全局变量和静态变量**。由于这些变量没有初始化，这个段在目标文件中实际上是空的，占用 0 字节的空间，这可以在一定程度上减少文件的大小。在运行时，这些未初始化的的变量会在内存中用 0 来初始化。`.bss` 段的名称最早来自 IBM704 汇编语言中的 *block started by symbol*。现在可把它当作是 *Better Save Space!* 方便记忆。
+
+在段表中可以发现 `.bss` 段的起始位置是 `0x78`，长度是 `0x4`。但可以发现 `.bss` 之后的段的起始位置也是 `0x78`，说明 `.bss` 段确实没有占用目标文件空间。段表中显示的长度是程序运行时变量占用的内存空间大小。
+
+```sh
+$ readelf -j 4 SimpleSection.o   
+readelf: Info: Unable to display section 4 - it has no contents
+```
+
+使用 `readefl` 尝试解析这个段时，提示这个段没有实际内容。源代码中符合条件应当保存在 `.bss` 段中的变量有 `global_uninit_var`、`static_var2`。实际上，由于编译时使用了优化选项，静态变量 `static_var2` 并没有出现在编译后的程序中，后面检查符号表时可以发现。如果不使用编译优化，得到的目标文件的 `.bss` 仍为空，但段表中显示的长度就是 `0x8`，这是两个整形数字在内存中占用的空间。
+
+## .rodata.str1.1 段
+
+`.rodata.str1.1` 段存放的是程序中使用的**只读数据**，例如字符串常量和用 `const` 修饰的常量。示例程序中只使用了一个字符串常量，也就是 `printf` 的格式化字符串 `%d\n`。只读数据在运行时只能读取不能修改。例如，如果在程序中尝试修改一个字符串常量，那么程序将以 `segment fault` 终止。
+
+`xxd` 的输出如下，也可以使用 `readelf -j 5 SimpleSection.o` 查看。
+
+```sh
+$ xxd -s 0x78 -l 4 SimpleSection.o  
+00000078: 2564 0a00                                %d..
+```
+
+将给出的 16 进制数值对照 ASCII 码表后可以发现，其对应的字符就是 `%d\n`。最后一个 `0x00` 是字符串的终止符 `\0`，因为不是可打印字符，右边没有显示。字符串常量还有一个特点，如果程序中用到了两个或多个相同的字符串，即便指向他们的变量名不同，或者只是格式化字符串，他们只会在只读数据段中出现一次。
+
+## .comment 段
+
+`.comment` 段是编译器存放自身版本信息的段。通过这个段可以方便地获知一个程序是由哪个编译器编译得到了，在一些时候可能会有帮助。
+
+`xxd` 的输出如下，也可以使用 `readelf -j6 SimpleSection.o` 查看。
+
+```sh
+$ xxd -s 0x7c -l 0x1c SimpleSection.o
+0000007c: 0047 4343 3a20 2847 4e55 2920 3135 2e32  .GCC: (GNU) 15.2
+0000008c: 2e31 2032 3032 3530 3831 3300            .1 20250813.
+```
+
+## .note.GNU-stack 段
+
+`.note.GNU-stack` 段用于标记进程的栈是否可执行。如果这个段为空，说明栈不可执行。一般来说，进程的栈是用于存放数据，可读可写。如果栈可执行，就有可能被恶意程序利用栈溢出的漏洞，执行存放在栈中的程序指令。例如，`gets` 函数没有限制输入字符串的长度，会接收超出缓冲区大小的数据。如果恶意程序构造特定序列，可能让计算机执行攻击者指定的代码。
+
+```sh
+$ readelf -j7 SimpleSection.o       
+Section '.note.GNU-stack' has no data to dump.
+```
+
+`readelf` 提示这个段为空。虽然这个段没有数据，这并不意味着可以去掉这个段。链接器在链接时会检查这个段，如果没有出现，可能会给出一个警告。
+
+
+## .note.gnu.property 段
+
+`.note.gnu.property` 段是用于存放和目标文件相关的属性、系统信息的段。
+
+`xxd` 的输出如下。
+
+```sh
+xxd -s 0x98 -l 0x30 SimpleSection.o
+00000098: 0400 0000 2000 0000 0500 0000 474e 5500  .... .......GNU.
+000000a8: 0200 01c0 0400 0000 0100 0000 0000 0000  ................
+000000b8: 0100 01c0 0400 0000 0100 0000 0000 0000  ................
+```
+
+`readelf` 可以解析这些信息。
+
+```sh
+$ readelf -j8 SimpleSection.o
+
+Displaying notes found in: .note.gnu.property
+  Owner                Data size        Description
+  GNU                  0x00000020       NT_GNU_PROPERTY_TYPE_0
+      Properties: x86 ISA used: x86-64-baseline
+        x86 feature used: x86
+```
+
+
+```c
+typedef struct
+{
+  Elf64_Word n_namesz;          /* Length of the note's name.  */
+  Elf64_Word n_descsz;          /* Length of the note's descriptor.  */
+  Elf64_Word n_type;            /* Type of the note.  */
+} Elf64_Nhdr;
+```
 ---
+
 ### man
 - `readelf`。可以展示目标文件的文件头和结构，包含了 `size` 和 `nm` 的功能。
     - `-h`，文件头。
@@ -514,3 +599,21 @@ Hex dump of section '.data':
 - 程序员的自我修养——链接、装载与库，俞甲子、石凡、潘爱民
 - [ELF x86-64 psABI](https://gitlab.com/x86-psABIs/x86-64-ABI)
 - [Relocation](https://refspecs.linuxbase.org/elf/gabi4+/ch4.reloc.html)
+- [The linker’s warnings about executable stacks and segments](https://www.redhat.com/en/blog/linkers-warnings-about-executable-stacks-and-segments)
+
+
+文件头 64
+
+段表  896 = 64*14
+
+段    752 
+.text          0x40 + 0x34
+.data          0x74 +  0x4
+.bss           0x78 +    0
+.rodata.str1.1 0x78 +  0x4
+.comment       0x7c + 0x1c
+.note.GNU-stack0x98 +    0
+.rel.text     0x238 + 0x48
+     1712
+
+1712−896−64=752 字节。
