@@ -306,11 +306,11 @@ Key to Flags:
 
 这个目标文件共 14 个段，除了第一个段是用于占位的全 0 段表项之外，共有 13 个有效段，这和与前面文件头所描述的段表数量相匹配。
 
-段表第一列是段表序号。第二列起都有两行，第二列上面是段名称，下面是段的大小，总计 741 字节（`.bss` 段实际长度为 0），这里和前面的计算结果差了 11 字节。
+段表第一列是段表序号。第二列起都有两行，第二列上面是段名称，对应段表结构中的 `sh_name`。其中存储了段名在段表字符串表中的序号，`readelf` 通过该序号读取的字符串展示在解析结果中。下面是段的大小，总计 741 字节（`.bss` 段实际长度为 0），这里和前面的计算结果差了 11 字节。
 
 第三列上面是段的类型，常见的有 `PROGBITS`,表示段中存放的是程序，代码段、数据段都是这个类型。`SYMTAB` 表示段的内容为符号表，`RELA` 表示段包含了重定位信息，是重定位表。`NOTE` 表示段存放提示性信息，`NULL` 表示该段无效。第三列下面是 `EntSize`，表示段中每个项目大小，仅在每个项目大小固定时有效，否则为 0。
 
-第四列上面的 `Address` 表示段的虚拟地址，仅在段可加载时有效。在尚未链接的可重定位文件中，这个值都是 0，因为可重定位文件不能加载，但共享库文件、可执行文件的这个字段是有值的。下面的 `Flags` 表示段的标志位，`Link` 和 `Info` 表示段的链接信息。段的标志位常标记段在虚拟地址空间的的属性，如 `AX` 标记的代码段需要在内存中分配空间并且有可执行权限，`WA` 标记的数据掉表示需要在内存中分配空间且段可写入。与链接相关的重定位表和符号表会有链接信息，重定位标注所用的字符串表和所作用的段在段中的下标，上面的字符串表下标是 11。符号表会标注所只用的字符串表在段中的下标。
+第四列上面的 `Address` 表示段的虚拟地址，仅在段可加载时有效。在尚未链接的可重定位文件中，这个值都是 0，因为可重定位文件不能加载，但共享库文件、可执行文件的这个字段是有值的。下面的 `Flags` 表示段的标志位，`Link` 和 `Info` 表示段的链接信息。段的标志位常标记段在虚拟地址空间的的属性，如 `AX` 标记的代码段需要在内存中分配空间并且有可执行权限，`WA` 标记的数据掉表示需要在内存中分配空间且段可写入。与链接相关的**重定位表**和**符号表**会有链接信息，重定位表标注其使用的字符串表的序号和所作用的段的序号，上面的字符串表下标是 11，因此两个重定位表都在这个这个字段标注了 11。符号表会标注其所使用的字符串表的序号。
 
 最后一列 `Offset` 表示段在文件中的偏移量，仅在段出现在文件中是有意义。`Align` 标注段的对齐字节数，表示该段的起始地址必须是标注数值的整数倍。
 
@@ -603,7 +603,7 @@ typedef struct
 
 这里信息的名称是 `GNU`，信息长度 `0x00000020` 字节，信息类型 `0x00000005` 对应 `NT_GNU_PROPERTY_TYPE_0`。信息属性有两项，类型值为 `0xc0010002` 和 `0xc0010001`，对应 `x86 ISA used` 和 `x86 feature used`，内容值都是 `0x1`。这个段主要说明了用到的指令集功能。
 
-## .eh_frame
+## .eh_frame 段
 
 `.eh_frame` 存放栈回溯函数表（unwind function table），常用于支持异常处理，其名称是 `Exception Handling Frame` 的缩写。在 C++ 中，异常发生时，需要根据调用栈恢复状态，这个段能提供异常处理所需要的数据。
 
@@ -654,7 +654,7 @@ Contents of the .eh_frame section:
 
 `.eh_frame` 段中包含两个部分 CIE (Common Information Entry) 和 FDE（Frame Description Entry）。CIE 提供通用部分信息，FDE 提供每个函数的记录。通过 FDE 中的 `pc` 范围，可以发现 FDE 针对的就是代码段中两个函数。可以在参考资料中找到更多关于这个段和异常处理的介绍，这里不展开描述。尽管异常处理在 C++ 中更为常见，C 也提供了 `setjmp/longjmp` 的机制在发生异常时恢复状态，因此 C 代码编译得到的目标文件也会有这个段。
 
-## .rela.eh_frame
+## .rela.eh_frame 段
 
 `.rela.eh_frame` 是 `.eh_frame` 的重定位表。
 
@@ -680,7 +680,11 @@ Relocation section '.rela.eh_frame' at offset 0x280 contains 2 entries:
 
 与代码段的重定位段功能相似，`Offset` 表示重定位入口在 `eh_frame` 段中的偏移，`Info` 表示重定位类型。因为 `eh_frame` 段中使用的函数地址也是相对于代码段起始位置的偏移，因此在链接阶段也要将这些偏移修改成 CPU 能访问到的符号地址。
 
-## .symtab
+## .symtab 段
+
+`.symtab` 段称为符号表（Symbol Table），存放目标文件中所有使用到的符号（Symbol）。链接的过程实际上确定各个目标文件中符号的引用，计算符号的确切地址。
+
+使用 `xxd` 获得这个段的原始数据如下，其中存放的是二进制数值。
 
 ```sh
 $ xxd -s 0x110 -l 0xd8 SimpleSection.o
@@ -700,7 +704,7 @@ $ xxd -s 0x110 -l 0xd8 SimpleSection.o
 000001e0: 0400 0000 0000 0000                      ........
 ```
 
-`readelf -s SimpleSection.o`
+借助 `readelf` 解析符号表，也可以使用 `readelf -s SimpleSection.o` 获得相同内容。
 
 ```sh
 $ readelf -j11 SimpleSection.o
@@ -717,6 +721,56 @@ Symbol table '.symtab' contains 9 entries:
      7: 0000000000000000     4 OBJECT  GLOBAL DEFAULT    4 global_uninit_var
      8: 0000000000000000     4 OBJECT  GLOBAL DEFAULT    3 global_init_var
 ```
+
+符号表中每个符号的结构固定，由下面的结构体定义。每个符号表项占用 24 字节，9 个符号组成的符号表共占用 216 字节。
+
+```c
+typedef uint16_t Elf64_Section;
+typedef struct {
+  Elf64_Word st_name;     /* Symbol name (string tbl index) */
+  unsigned char st_info;  /* Symbol type and binding */
+  unsigned char st_other; /* Symbol visibility */
+  Elf64_Section st_shndx; /* Section index */
+  Elf64_Addr st_value;    /* Symbol value */
+  Elf64_Xword st_size;    /* Symbol size */
+} Elf64_Sym;
+```
+
+符号包括函数和变量，函数名或变量名是符号的名称（Symbol Name），符号表中符号的值（Symbol Value）是符号的地址。处理函数和变量，符号表中还会存放编译器产生的段名，如 `.text`，局部变量和行号信息。还是因为启用了编译优化，局部变量没有出现在这个符号表中，如果不使用编译优化，符号表内容如下。
+
+```sh
+$ readelf -s SimpleSection.O0.o
+
+Symbol table '.symtab' contains 13 entries:
+   Num:    Value          Size Type    Bind   Vis      Ndx Name
+     0: 0000000000000000     0 NOTYPE  LOCAL  DEFAULT  UND 
+     1: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS SimpleSection.O0.c
+     2: 0000000000000000     0 SECTION LOCAL  DEFAULT    1 .text
+     3: 0000000000000000     0 SECTION LOCAL  DEFAULT    3 .data
+     4: 0000000000000000     0 SECTION LOCAL  DEFAULT    4 .bss
+     5: 0000000000000000     0 SECTION LOCAL  DEFAULT    5 .rodata
+     6: 0000000000000004     4 OBJECT  LOCAL  DEFAULT    3 static_var.1
+     7: 0000000000000004     4 OBJECT  LOCAL  DEFAULT    4 static_var2.0
+     8: 0000000000000000     4 OBJECT  GLOBAL DEFAULT    3 global_init_var
+     9: 0000000000000000     4 OBJECT  GLOBAL DEFAULT    4 global_uninit_var
+    10: 0000000000000000    39 FUNC    GLOBAL DEFAULT    1 func1
+    11: 0000000000000000     0 NOTYPE  GLOBAL DEFAULT  UND printf
+    12: 0000000000000027    51 FUNC    GLOBAL DEFAULT    1 main
+```
+
+可以看到，`main` 函数中的两个静态变量也出现在其中。但这两个变量都被加上了后缀，这是符号修饰的结果，用来避免符号名称冲突。
+
+符号表中第一列是符号序号，其中序号为 0 的符号总是未定义。第二列是符号值，对应结构体成员 `st_value`。如果符号是函数或变量，该值表示符号在所在段中的偏移。第三列是符号大小，对应结构体成员 `st_size`。第四列和第五列对应结构体成员 `st_info`,这个成员定义为无符号整数，占用 8 位，其中低 4 为对应第四列符号类型，高 4 位对应第五列符号绑定信息。
+
+符号类型的 4 位数值可以代表 16 中符号类型，常见的有五种。0 表示符号未定义。1 代表符号是数据对象 `STT_OBJECT`，表中展示为 `OBJECT`，代码中的变量、数组属于此类。2 代表符号是函数对象 `STT_FUNC`，表中展示位 `FUNC`。3 代表 `STT_SECTION`，表中展示为 `SECTION`，表示符号与一个段关联。4 表示 `STT_FILE`，表中展示为 `FILE`，表示符号为文件名，一般都是目标文件对应的源代码文件名。符号绑定信息这里介绍两种。0 表示 `LOCAL`，代表局部符号，只在本目标文件内可见，函数内的局部变量就是这个类型。1 表示 `GLOBAL`，代表全局符号，本目标文件和其他目标文件都可以访问此类符号，例如定义在函数外的全局变量以及 C 语言的函数。
+
+第六列对应结构体成员 `st_other`，表示符号的可见性，可以通过编译参数 `-fvisibility=hidden` 和 `__attribute__((visibility("hidden")))` 控制。例如，如果不希望某个函数对其他编译单元可见，可以使用这个功能。更多信息可以在参考资料中找到，这里不展开描述。
+
+第七列表示符号所属的段，对应结构体成员 `st_shndx`。如果符号定义在本目标文件，展示的就是符号所在段的序号；如果是定义在外部的符号其值就是 `UND`。`ABS` 值表示符号是一个绝对的值，例如文件名就是这个类型。
+
+第八列是符号的名称，对应结构体成员 `st_name`。虽然符号表展示了具体名称，但其实际存储的数据是这个符号在字符串表中的下标（下一节介绍），`readelf` 通过访问字符串表将具体值显示了出来。对于 `SECTION` 类型的段，名称就是段名，而段名存储在段表字符串表中，其下标标记在段表结构中。
+
+
 
 ## .strtab
 
@@ -819,6 +873,7 @@ $ xxd -s 0x220 -l 0x120 SimpleSection.o
 - [The linker’s warnings about executable stacks and segments](https://www.redhat.com/en/blog/linkers-warnings-about-executable-stacks-and-segments)
 - [Exception Frames](https://refspecs.linuxfoundation.org/LSB_4.1.0/LSB-Core-generic/LSB-Core-generic/ehframechpt.html)
 - [Dwarf2 Exception Handler HOWTO](https://gcc.gnu.org/wiki/Dwarf2EHNewbiesHowto)
+- [Visibility](https://gcc.gnu.org/wiki/Visibility)
 文件头 64
 
 段表  896 = 64*14
