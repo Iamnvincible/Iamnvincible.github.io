@@ -554,7 +554,7 @@ $ xxd -s 0x78 -l 4 SimpleSection.o
 
 ## .comment 段
 
-`.comment` 段是编译器存放自身版本信息的段。通过这个段可以方便地获知一个程序是由哪个编译器编译得到了，在一些时候可能会有帮助。
+`.comment` 段是编译器存放自身版本信息的段。通过这个段可以方便地获知一个程序是由哪个编译器编译得到的，在一些时候可能会有帮助。
 
 `xxd` 的输出如下，也可以使用 `readelf -j6 SimpleSection.o` 查看。
 
@@ -663,7 +663,7 @@ Contents of the .eh_frame section:
   DW_CFA_nop
 ```
 
-`.eh_frame` 段中包含两个部分 CIE (Common Information Entry) 和 FDE（Frame Description Entry）。CIE 提供通用部分信息，FDE 提供每个函数的记录。通过 FDE 中的 `pc` 范围，可以发现 FDE 针对的就是代码段中两个函数。可以在参考资料中找到更多关于这个段和异常处理的介绍，这里不展开描述。尽管异常处理在 C++ 中更为常见，C 也提供了 `setjmp/longjmp` 的机制在发生异常时恢复状态，因此 C 代码编译得到的目标文件也会有这个段。
+`.eh_frame` 段中包含两个部分 CIE (Common Information Entry) 和 FDE（Frame Description Entry）。CIE 提供通用部分信息，FDE 提供每个函数的记录。通过 FDE 中的 `pc` 范围，可以发现 FDE 针对的就是代码段中两个函数。可以在参考资料中找到更多关于这个段和异常处理的介绍，这里不展开描述。尽管异常处理在 C++ 中更为常见，C 也提供了 `setjmp/longjmp` 的机制在发生异常时恢复状态，因此 C 代码编译得到的目标文件也会有这个段。在编译时使用参数 `-fno-asynchronous-unwind-tables` 可以让 GCC 不生成 `.eh_frame` 和 `.rela.eh_frame` 两个段。
 
 ## .rela.eh_frame 段
 
