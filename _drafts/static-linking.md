@@ -287,66 +287,69 @@ int main() {
 
 注意到，前面给出的链接指令都是通过 GCC 来完成的，而 GCC 并不是链接器，它只是将参数传递给了链接器。为了观察 GCC 执行的完成过程，给 GCC 加入 `--verbose` 参数。
 
-下面是 `gcc -static main2.c addvec.c -O1 -o vector.out -fno-builtin --verbose` 的输出。
+下面是 `gcc -static main2.c addvec.c -O1 -o vector.out -fno-builtin --verbose` 的输出。由于输出较多，这里只保留关键部分。
 ```sh
 $ gcc -static main2.c addvec.c -O1 -o vector.out -fno-builtin --verbose
-Using built-in specs.
-COLLECT_GCC=gcc
-COLLECT_LTO_WRAPPER=/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/lto-wrapper
-Target: x86_64-pc-linux-gnu
-Configured with: /build/gcc/src/gcc/configure --enable-languages=ada,c,c++,d,fortran,go,lto,m2,objc,obj-c++,rust,cobol --enable-bootstrap --prefix=/usr --libdir=/usr/lib --libexecdir=/usr/lib --mandir=/usr/share/man --infodir=/usr/share/info --with-bugurl=https://gitlab.archlinux.org/archlinux/packaging/packages/gcc/-/issues --with-build-config=bootstrap-lto --with-linker-hash-style=gnu --with-system-zlib --enable-__cxa_atexit --enable-cet=auto --enable-checking=release --enable-clocale=gnu --enable-default-pie --enable-default-ssp --enable-gnu-indirect-function --enable-gnu-unique-object --enable-libstdcxx-backtrace --enable-link-serialization=1 --enable-linker-build-id --enable-lto --enable-multilib --enable-plugin --enable-shared --enable-threads=posix --disable-libssp --disable-libstdcxx-pch --disable-werror
-Thread model: posix
-Supported LTO compression algorithms: zlib zstd
+
 gcc version 15.2.1 20250813 (GCC) 
-COLLECT_GCC_OPTIONS='-static' '-O1' '-o' 'vector.out' '-fno-builtin' '-v' '-mtune=generic' '-march=x86-64' '-dumpdir' 'vector.out-'
- /usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/cc1 -quiet -v main2.c -quiet -dumpdir vector.out- -dumpbase main2.c -dumpbase-ext .c -mtune=generic -march=x86-64 -O1 -version -fno-builtin -o /tmp/cc8byjZ0.s
-GNU C23 (GCC) version 15.2.1 20250813 (x86_64-pc-linux-gnu)
-        compiled by GNU C version 15.2.1 20250813, GMP version 6.3.0, MPFR version 4.2.2, MPC version 1.3.1, isl version isl-0.27-GMP
 
-GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072
-ignoring nonexistent directory "/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/../../../../x86_64-pc-linux-gnu/include"
-#include "..." search starts here:
-#include <...> search starts here:
- /usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/include
- /usr/local/include
- /usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/include-fixed
- /usr/include
-End of search list.
-Compiler executable checksum: 09af9d42b9185573b6c370dd7aa39e64
-COLLECT_GCC_OPTIONS='-static' '-O1' '-o' 'vector.out' '-fno-builtin' '-v' '-mtune=generic' '-march=x86-64' '-dumpdir' 'vector.out-'
- as -v --64 -o /tmp/ccjCivlq.o /tmp/cc8byjZ0.s
-GNU assembler version 2.45.0 (x86_64-pc-linux-gnu) using BFD version (GNU Binutils) 2.45.0
-COLLECT_GCC_OPTIONS='-static' '-O1' '-o' 'vector.out' '-fno-builtin' '-v' '-mtune=generic' '-march=x86-64' '-dumpdir' 'vector.out-'
- /usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/cc1 -quiet -v addvec.c -quiet -dumpdir vector.out- -dumpbase addvec.c -dumpbase-ext .c -mtune=generic -march=x86-64 -O1 -version -fno-builtin -o /tmp/cc8byjZ0.s
-GNU C23 (GCC) version 15.2.1 20250813 (x86_64-pc-linux-gnu)
-        compiled by GNU C version 15.2.1 20250813, GMP version 6.3.0, MPFR version 4.2.2, MPC version 1.3.1, isl version isl-0.27-GMP
+ /usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/cc1 -quiet -v main2.c -quiet -dumpdir vector.out- -dumpbase main2.c -dumpbase-ext .c -mtune=generic -march=x86-64 -O1 -version -fno-builtin -o /tmp/ccXX31Xa.s
+ as -v --64 -o /tmp/ccllyPrC.o /tmp/ccXX31Xa.s
 
-GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072
-ignoring nonexistent directory "/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/../../../../x86_64-pc-linux-gnu/include"
-#include "..." search starts here:
-#include <...> search starts here:
- /usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/include
- /usr/local/include
- /usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/include-fixed
- /usr/include
-End of search list.
-Compiler executable checksum: 09af9d42b9185573b6c370dd7aa39e64
-COLLECT_GCC_OPTIONS='-static' '-O1' '-o' 'vector.out' '-fno-builtin' '-v' '-mtune=generic' '-march=x86-64' '-dumpdir' 'vector.out-'
- as -v --64 -o /tmp/ccJw1gTQ.o /tmp/cc8byjZ0.s
-GNU assembler version 2.45.0 (x86_64-pc-linux-gnu) using BFD version (GNU Binutils) 2.45.0
-COMPILER_PATH=/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/:/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/:/usr/lib/gcc/x86_64-pc-linux-gnu/:/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/:/usr/lib/gcc/x86_64-pc-linux-gnu/
-LIBRARY_PATH=/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/:/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/../../../../lib/:/lib/../lib/:/usr/lib/../lib/:/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/../../../:/lib/:/usr/lib/
-COLLECT_GCC_OPTIONS='-static' '-O1' '-o' 'vector.out' '-fno-builtin' '-v' '-mtune=generic' '-march=x86-64' '-dumpdir' 'vector.out.'
- /usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/collect2 -plugin /usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/liblto_plugin.so -plugin-opt=/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/lto-wrapper -plugin-opt=-fresolution=/tmp/cccIKp6Z.res -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_eh -plugin-opt=-pass-through=-lc --build-id --hash-style=gnu -m elf_x86_64 -static -o vector.out /usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/../../../../lib/crt1.o /usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/../../../../lib/crti.o /usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/crtbeginT.o -L/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1 -L/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/../../../../lib -L/lib/../lib -L/usr/lib/../lib -L/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/../../.. -L/lib -L/usr/lib /tmp/ccjCivlq.o /tmp/ccJw1gTQ.o --start-group -lgcc -lgcc_eh -lc --end-group /usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/crtend.o /usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/../../../../lib/crtn.o
-COLLECT_GCC_OPTIONS='-static' '-O1' '-o' 'vector.out' '-fno-builtin' '-v' '-mtune=generic' '-march=x86-64' '-dumpdir' 'vector.out.'
+ /usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/cc1 -quiet -v addvec.c -quiet -dumpdir vector.out- -dumpbase addvec.c -dumpbase-ext .c -mtune=generic -march=x86-64 -O1 -version -fno-builtin -o /tmp/ccXX31Xa.s
+ as -v --64 -o /tmp/ccoin3wW.o /tmp/ccXX31Xa.s
+
+ /usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/collect2 
+ -plugin /usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/liblto_plugin.so -plugin-opt=/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/lto-wrapper -plugin-opt=-fresolution=/tmp/cce0Awhr.res -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_eh -plugin-opt=-pass-through=-lc 
+ --build-id --hash-style=gnu -m elf_x86_64 -static -o vector.out 
+ /usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/../../../../lib/crt1.o 
+ /usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/../../../../lib/crti.o 
+ /usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/crtbeginT.o 
+ -L/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1 
+ -L/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/../../../../lib 
+ -L/lib/../lib -L/usr/lib/../lib 
+ -L/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/../../.. 
+ -L/lib -L/usr/lib 
+ /tmp/ccllyPrC.o /tmp/ccoin3wW.o 
+ --start-group -lgcc -lgcc_eh -lc --end-group 
+ /usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/crtend.o 
+ /usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/../../../../lib/crtn.o
 ```
 
 命令将源代码直接编译成了可执行文件，通过输出可以观察到编译每一步执行的过程。参数 `-fno-builtin` 防止 GCC 使用内建函数优化源代码中的函数。
-- `cc1` 是 GCC 的 C 语言编译器，它将源代码编译得到临时文件 `/tmp/ccav0mO3.s`。这是一个汇编语言文件。
-- `as -v --64 -o /tmp/ccPrnJ1f.o /tmp/ccav0mO3.s`，这条指令调用汇编器 `as`，将上面的汇编语言文件汇编得到目标文件 `/tmp/ccPrnJ1f.o`，这也是一个临时文件。
+- `cc1` 是 GCC 的 C 语言编译器，它将两个源代码先后编译得到临时文件 `/tmp/ccXX31Xa.s`，这是一个汇编语言文件。
+- 两条汇编器指令，将上一步得到的两个汇编语言文件汇编得到两个目标文件 `/tmp/ccllyPrC.o` 和 `/tmp/ccoin3wW.o`，这是两个临时文件。
+  - `as -v --64 -o /tmp/ccllyPrC.o /tmp/ccXX31Xa.s`，
+  - `as -v --64 -o /tmp/ccoin3wW.o /tmp/ccXX31Xa.s`
 - 最后调用 `collect2` 完成链接，得到可执行文件 `vector.out`。
 
-`collect2` 是链接器 `ld` 的包装，用于处理 C++ 中的构造函数。
+`collect2` 是链接器 `ld` 的包装，用于处理 C++ 中的构造函数，处理完成后再调用真正的链接器 `ld` 完成链接。这里编译的是 C 代码，因此可以把它当作链接器。链接器的参数较多，大致分为 6 个部分。
+
+- Plugin 和 LTO（Link-Time Optimization）选项，用于链接时优化。
+- 静态链接参数和 ELF 格式，指定静态链接和输出可执行文件格式。
+- C 语言运行时目标文件。
+  - `crt1.o`，入口函数。
+  - `crti.o`，运行库初始化函数。
+  - `crtbeginT.o`，与 C++ 构造函数相关。
+  - `crtend.o`，与 C++ 构造函数相关。
+  - `crtn.o`，资源清理函数。
+- 静态库搜索路径，也就是静态库存放的路径。
+- 需要链接的目标文件。这里是前面汇编器生成的两个临时目标文件。
+  - `/tmp/ccllyPrC.o`
+  - `/tmp/ccoin3wW.o` 
+- 需要链接的静态库
+  - `libgcc.a`，包含 GCC 在特定平台上的辅助函数。
+  - `libgcc_eh.a`，包含异常处理函数。
+  - `libc.a`，静态 C 标准库。
+
+大部分 C 程序链接时，除了程序本身的目标文件外，其他链接器的参数基本相同。也就是说，即便是最简单的 C 程序也需要与这么多文件链接起来。这里的例子中，源代码只有几百字节，编译链接完成后的可执行文件却超过 800KB。
+
+### 链接过程控制
+
+前面的链接参数适用与绝大部分程序，但像操作系统内核、驱动和一些没有操作系统存在的环境（如 BIOS 、引导程序、嵌入式环境），受到环境限制，链接过程需要更为细致的控制。例如各个段的起始地址、需要链接的目标文件和函数库、调试信息等。
+
+控制链接过程通过链接器的命令行参数，但其提供的参数有限，为了完成地控制整个链接过程，需要使用链接控制脚本。在没有为链接器指定链接脚本时，链接器会使用内置的默认链接脚本。脚本内容可通过 `ld -verbose` 查看，由于内容较多不在文中展示。针对每个平台都有特定的链接脚本，这些脚本存放在 `/usr/lib/ldscripts` 目录下。
+
 
 
 完成了链接的三个部分就足够创建一个可执行文件了吗？
