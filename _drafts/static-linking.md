@@ -287,7 +287,8 @@ int main() {
 
 注意到，前面给出的链接指令都是通过 GCC 来完成的，而 GCC 并不是链接器，它只是将参数传递给了链接器。为了观察 GCC 执行的完成过程，给 GCC 加入 `--verbose` 参数。
 
-下面是 `gcc -static main2.c addvec.c -O1 -o vector.out -fno-builtin --verbose` 的输出。由于输出较多，这里只保留关键部分。
+下面是 `gcc -static main2.c addvec.c -O1 -o vector.out -fno-builtin --verbose` 的输出。由于内容较多，这里只保留关键部分。
+
 ```sh
 $ gcc -static main2.c addvec.c -O1 -o vector.out -fno-builtin --verbose
 
@@ -317,8 +318,8 @@ gcc version 15.2.1 20250813 (GCC)
 ```
 
 命令将源代码直接编译成了可执行文件，通过输出可以观察到编译每一步执行的过程。参数 `-fno-builtin` 防止 GCC 使用内建函数优化源代码中的函数。
-- `cc1` 是 GCC 的 C 语言编译器，它将两个源代码先后编译得到临时文件 `/tmp/ccXX31Xa.s`，这是一个汇编语言文件。
-- 两条汇编器指令，将上一步得到的两个汇编语言文件汇编得到两个目标文件 `/tmp/ccllyPrC.o` 和 `/tmp/ccoin3wW.o`，这是两个临时文件。
+- `cc1` 是 GCC 的 C 语言编译器，它将两个源代码先后编译汇编文件 `/tmp/ccXX31Xa.s`，随后调用汇编器。注意到这两个文件使用的文件名相同，但内容是不同。
+- 两条汇编器指令，将上一步得到的两个汇编语言文件汇编得到两个目标文件 `/tmp/ccllyPrC.o` 和 `/tmp/ccoin3wW.o`，也是临时文件。
   - `as -v --64 -o /tmp/ccllyPrC.o /tmp/ccXX31Xa.s`，
   - `as -v --64 -o /tmp/ccoin3wW.o /tmp/ccXX31Xa.s`
 - 最后调用 `collect2` 完成链接，得到可执行文件 `vector.out`。
@@ -342,15 +343,85 @@ gcc version 15.2.1 20250813 (GCC)
   - `libgcc_eh.a`，包含异常处理函数。
   - `libc.a`，静态 C 标准库。
 
-大部分 C 程序链接时，除了程序本身的目标文件外，其他链接器的参数基本相同。也就是说，即便是最简单的 C 程序也需要与这么多文件链接起来。这里的例子中，源代码只有几百字节，编译链接完成后的可执行文件却超过 800KB。
+大部分 C 程序链接时，除了程序本身的目标文件外，其他链接器的参数基本相同。也就是说，即便是最简单的 C 程序也需要与这么多文件链接起来。考虑到静态库的函数并非独立，常常会依赖与其他函数，同时三个静态库之间也存在依赖，因此链接得到的可执行文件往往会包含大量源代码中没有显示调用的函数代码。这里的例子中，源代码只有几百字节，编译链接完成后的可执行文件却超过 800KB。通过 `objdump -d vector.out` 查看可执行文件的反汇编内容可以发现，文件中包含了上千个函数，这些函数用于 IO、字符串处理、系统调用、信号、线程、内存分配等方面，而源代码中只显式地用到了基本的算术运算和一个输出函数。
 
 ### 链接过程控制
 
 前面的链接参数适用与绝大部分程序，但像操作系统内核、驱动和一些没有操作系统存在的环境（如 BIOS 、引导程序、嵌入式环境），受到环境限制，链接过程需要更为细致的控制。例如各个段的起始地址、需要链接的目标文件和函数库、调试信息等。
 
-控制链接过程通过链接器的命令行参数，但其提供的参数有限，为了完成地控制整个链接过程，需要使用链接控制脚本。在没有为链接器指定链接脚本时，链接器会使用内置的默认链接脚本。脚本内容可通过 `ld -verbose` 查看，由于内容较多不在文中展示。针对每个平台都有特定的链接脚本，这些脚本存放在 `/usr/lib/ldscripts` 目录下。
+控制链接过程通过链接器的命令行参数，但其提供的参数有限，为了完成地控制整个链接过程，需要使用链接控制脚本。在没有为链接器指定链接脚本时，链接器会使用内置的默认链接脚本。脚本内容可通过 `ld -verbose` 查看，由于内容较多不在文中展示。链接器针对每个平台都有特定的链接脚本，这些脚本存放在 `/usr/lib/ldscripts` 目录下。
 
+#### 无依赖的 C 程序
 
+在介绍链接脚本之前，先来创建一个不依赖任何函数库的 C 代码。
+
+```c
+#define SYS_write 1
+#define SYS_exit  60
+
+void nomain(void);
+
+static long syscall(long num, long arg1, long arg2, long arg3) {
+    long ret;
+    __asm__ volatile (
+        "syscall"
+        : "=a"(ret)
+        : "a"(num), "D"(arg1), "S"(arg2), "d"(arg3)
+        : "rcx", "r11", "memory"
+    );
+    return ret;
+}
+
+void nomain(void) {
+    const char msg[] = "hello world\n";
+    syscall(SYS_write, 1, (long)msg, sizeof(msg) - 1);
+    syscall(SYS_exit, 0, 0, 0);
+}
+```
+
+代码中使用两个 Linux 系统调用，一个是 `write` 调用，其调用号是 1，使用 GCC 扩展内联汇编指定寄存器和参数向标准输出（文件描述符为 1）打印 `hello word`；另一个是 `exit` 调用，调用号 60，调用后程序退出。这段代码的入口并不是常见的 `main` 函数，而是自定义了一个名为 `nomain` 的函数。在链接时，可以指定程序的入口函数为 `nomain`。
+
+将源代码保存为 `mini.c`，再通过 `gcc -c mini.c -O1 -fno-stack-protector -fno-asynchronous-unwind-tables` 编译得到 `mini.o` 目标文件。为了使输出文件更小，使用了 `-fno-stack-protector` 禁用栈保护和 `-fno-asynchronous-unwind-tables` 禁用调式所需数据结构。生成的文件大小约 1KB。随后调用 `ld -static -o mini.out mini.o -e nomain` 将文件链接，输出程序 `mini.out`。参数指定了程序的入口函数为 `nomain`。生成的可执行程序大小约 4.8KB，远小于 800KB。运行这个程序后，终端输出 `hello world` 后正常退出，说明这是一个有效的可执行程序。这个程序的反汇编输出中只有一个 `nomain` 函数。
+
+这个程序是 ELF 文件，因此有 ELF 文件头，可执行文件还有描述内存分布的文件头，共占 344 字节。通过 `readelf` 检查段表，共有 6 个段：`.note.gnu.property`，`.text`，`.comment`，`.symtab`，`.strtab`，`.shstrtab`。段表和这些段共占用 792 字节。对这个可执行程序来说，`.note.gnu.property`、`.comment` 段并不是必须的。为满足内存页的对齐要求，代码段是从文件的 `0x1000` 偏移位置开始，载入内存后从虚拟内存地址 `0x401000` 开始。在文件头和代码段之间有约 3.5KB 的填充，如果没有内存对齐要求，这个可执行文件中必须的内容只有大约 1KB。
+
+#### 链接脚本
+
+链接器的输入是目标文件，目标文件中主要是各个段的数据。链接过程中，链接器会处理各个输入文件的段，选择需要的段，并将相同类型的段合并，最后输出到可执行文件中。链接脚本就是用来处理输入段如何输出到可执行文件中的工具。除了处理段，链接脚本还可以设定文件装载地址、程序入口、段的属性等。
+
+为了能让前面的可执行程序的大小再缩小一点，可以编写自定义链接脚本，只保留需要的段。下面是针对上面的程序设计的链接脚本内容，使用到了链接脚本的基本语法。
+
+```sh
+ENTRY(nomain)
+
+SECTIONS
+{
+  /* Start at default base or specified */
+  . = 0x10000;
+
+  .text : {
+    *(.text)        /* Include all .text from input files */
+  }
+
+  /* Discard all other sections */
+  /DISCARD/ : {
+    *(.comment)
+    *(.note.gnu.property)
+    *(.symtab)
+    *(.strtab)
+    *(.shstrtab)
+    *(.data)
+    *(.bss)
+    *(.rodata)
+  }
+}
+```
+
+这个链接脚本指定了程序入口 `nomain`、程序起始虚拟内存地址和段的处理规则。段处理规则中，将输入文件中的 `.text` 段合并到输出文件的 `.text` 中，并丢弃其他所有输入文件中的段。尽管脚本中只选择了代码段输出到可执行文件中，但链接器还是会生成 `.symtab`、`.strtab` 和 `.shstrtab` 段。`.symtab` 和 `.strtab` 段在运行时不会用到，可以添加参数 `-s` 使链接器不生成。另外 `.shstrtab` 段用于保存段的信息，一般不会删除。
+
+将链接脚本存为 `mini.lds`，通过 `ld -static -s -o mini_lds.out -T mini.lds mini.o` 命令链接。这次输出的可执行文件大小约 4.3KB，并且仍能正常运行，输出 `hello world` 后正常退出。可执行文件还可以变得更小，但这些鬼斧神工不与本文讨论的静态链接不相关，这里不再继续深入。
+
+### 常规的链接过程
 
 完成了链接的三个部分就足够创建一个可执行文件了吗？
 链接了什么？
